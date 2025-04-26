@@ -34,11 +34,21 @@ public class Main {
 
             int userChoice = Integer.parseInt(scanner.nextLine());
             switch (userChoice){
-                case 1 -> addDeposit();
-                case 2 -> makePayment();
-                case 3 -> ledgerMenu();
-                case 4 -> running = false;
-                default -> System.out.println("Invalid input, please select from 1 - 4 option.");
+                case 1:
+                    Transaction newDeposit = addDeposit();
+                    addNewTransaction("src/transaction.csv", newDeposit);
+                    break;
+                case 2:
+                    Transaction newPayment = makePayment();
+                    addNewTransaction("src/transaction.csv",newPayment);
+                    break;
+                case 3:
+                    ledgerMenu();
+                    break;
+                case 4:
+                    running = false;
+                    break;
+                default: System.out.println("Invalid input, please select from 1 - 4 option.");
             }
             if(userChoice == 3){
                 running = false;
@@ -46,32 +56,35 @@ public class Main {
         }
     }
 
-    public static void addDeposit(){
-        try (FileWriter fw = new FileWriter("src/transaction.csv",true)){
-
-            formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd | KK:mm:ss a");
-            LocalDate ld = LocalDate.now();
-            LocalTime lt = LocalTime.now();
-            LocalDateTime ldt = ld.atTime(lt);
-            String ldtString = ldt.format(formatter);
-
-            System.out.println("What amount you would like to deposit?");
-            double depositAmount = Double.parseDouble(scanner.nextLine());
-
-            System.out.println("Please provide a description of deposit.");
-            String depositDescription = scanner.nextLine();
-            String dpositId = "D";
-
-            fw.write(ldtString + " | " + depositDescription + " | " + dpositId + " | " + "$" + depositAmount + "\n");
-
-        }catch (IOException | InputMismatchException e){
+    public static void addNewTransaction (String filename, Transaction t){
+        try (FileWriter fw = new FileWriter(filename,true)){
+            fw.write(t.toFileString() + "\n");
+        } catch (IOException e){
             System.out.println(e.getMessage());
         }
-
     }
 
-    public static void makePayment(){
-        try (FileWriter fw = new FileWriter("src/transaction.csv",true)){
+    public static Transaction addDeposit(){
+
+        formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd | KK:mm:ss a");
+        LocalDate ld = LocalDate.now();
+        LocalTime lt = LocalTime.now();
+        LocalDateTime ldt = ld.atTime(lt);
+        String ldtString = ldt.format(formatter);
+
+        System.out.println("What amount you would like to deposit?");
+        double depositAmount = scanner.nextDouble();
+        scanner.nextLine();
+
+        System.out.println("Please provide a description of deposit.");
+        String depositDescription = scanner.nextLine();
+        String depositId = "D";
+
+        return new Transaction(ldtString,depositDescription,depositId,depositAmount);
+    }
+
+
+    public static Transaction makePayment(){
 
             formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd | KK:mm:ss a");
             LocalDate ld = LocalDate.now();
@@ -80,17 +93,14 @@ public class Main {
             String ldtString = ldt.format(formatter);
 
             System.out.println("What is the payment amount?");
-            double paymentAmount = Double.parseDouble(scanner.nextLine());
+            double paymentAmount = scanner.nextDouble();
+            scanner.nextLine();
 
             System.out.println("Please provide a description of payment.");
             String paymentDescription = scanner.nextLine();
             String paymentId = "P";
 
-            fw.write(ldtString + " | " + paymentDescription + " | " + paymentId + " | " + "$" + paymentAmount + "(P)\n");
-
-        }catch (IOException | InputMismatchException e){
-            System.out.println(e.getMessage());
-        }
+            return new Transaction(ldtString, paymentDescription,paymentId,paymentAmount);
     }
 
     public static void ledgerMenu(){
@@ -107,7 +117,7 @@ public class Main {
 
             int userLedgerChoice = Integer.parseInt(scanner.nextLine());
             switch (userLedgerChoice){
-                case 1 -> ledgerReader();
+                case 1 -> displayAllEntries();
                 case 5 -> userMenu() ;
                 default -> System.out.println("Invalid input, please select from 1 - 5 option.");
             }
@@ -117,7 +127,7 @@ public class Main {
         }
     }
 
-    public static void ledgerReader(){
+    public static void displayAllEntries(){
         try(BufferedReader bf = new BufferedReader(new FileReader("src/transaction.csv"))){
             String line;
             while ((line = bf.readLine())!= null){
