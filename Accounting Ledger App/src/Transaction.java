@@ -1,4 +1,4 @@
-public class LedgerLog {
+public class Transactions {
     String date;
     String time;
     String Description;
