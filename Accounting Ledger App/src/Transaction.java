@@ -1,37 +1,52 @@
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 public class Transaction {
-    private String dateTime;
+    private LocalDate date;
+    private LocalTime time;
+    private String stringDate;
+    private String stringTime;
     private String description;
     private String idOfTransaction;
     private double transactionAmount;
-
     private String paymentDescription;
     private String paymentId;
 
-    //Payment Constructor
+
 
     //Deposit Constructor
-    public Transaction (String dateTime, String description, String idOfTransaction, double transactionAmount){
-        this.dateTime = dateTime;
+    public Transaction (LocalDate date,LocalTime time,String description, String idOfTransaction, double transactionAmount){
+        this.date = date;
+        this.time = time;
         this.description = description;
         this.transactionAmount = transactionAmount;
         this.idOfTransaction = idOfTransaction;
     }
-//    public Transaction (String description, double amountOfTransaction){
-//        this.description = description;
-//        this.amountOfTransaction = amountOfTransaction;
-//    }
+    public Transaction (LocalTime time,String description, String idOfTransaction, double transactionAmount){
+        this.time = time;
+        this.description = description;
+        this.transactionAmount = transactionAmount;
+        this.idOfTransaction = idOfTransaction;
+    }
+
     public String toFileString() {
-    return dateTime + " | " + description + " | " + idOfTransaction + " | " + transactionAmount + "$";
+    return date + "|" + time + "|" + description + "|" + idOfTransaction + "|" + transactionAmount;
     }
 
-    public String getDateTime() {
-        return dateTime;
+    public LocalDate getDate() {
+        return date;
     }
 
-    public void setDateTime(String dateTime) {
-        this.dateTime = dateTime;
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
+
+    public LocalTime getTime() {
+        return time;
+    }
+
+    public void setTime(LocalTime time) {
+        this.time = time;
     }
 
     public String getDescription() {
@@ -56,14 +71,6 @@ public class Transaction {
 
     public void setTransactionAmount(double transactionAmount) {
         this.transactionAmount = transactionAmount;
-    }
-
-    public String getPaymentDescription() {
-        return paymentDescription;
-    }
-
-    public void setPaymentDescription(String paymentDescription) {
-        this.paymentDescription = paymentDescription;
     }
 
     public String getPaymentId() {

@@ -6,13 +6,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.InputMismatchException;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class Main {
     static Scanner scanner = new Scanner(System.in);
-    static DateTimeFormatter formatter;
+    static DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("KK:mm:ss a");
+    static DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     public static void main(String[] args) {
 
@@ -21,10 +20,11 @@ public class Main {
 
 
     }
+
     public static void userMenu(){
         boolean running = true;
         while (running){
-
+            System.out.println("\n--------------------------- Home Screen --------------------------------");
             System.out.println("Please select a menu option from 1 - 4.");
             System.out.println("""
                     1. Add Deposit.
@@ -66,11 +66,13 @@ public class Main {
 
     public static Transaction addDeposit(){
 
-        formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd | KK:mm:ss a");
         LocalDate ld = LocalDate.now();
+        ld.format(dateFormatter);
+
         LocalTime lt = LocalTime.now();
-        LocalDateTime ldt = ld.atTime(lt);
-        String ldtString = ldt.format(formatter);
+        String formatedLt =  lt.format(timeFormatter);
+        LocalTime newTimeFormat = LocalTime.parse(formatedLt,timeFormatter);
+
 
         System.out.println("What amount you would like to deposit?");
         double depositAmount = scanner.nextDouble();
@@ -80,33 +82,33 @@ public class Main {
         String depositDescription = scanner.nextLine();
         String depositId = "D";
 
-        return new Transaction(ldtString,depositDescription,depositId,depositAmount);
+        return new Transaction(ld,newTimeFormat,depositDescription,depositId,depositAmount);
     }
-
 
     public static Transaction makePayment(){
 
-            formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd | KK:mm:ss a");
-            LocalDate ld = LocalDate.now();
-            LocalTime lt = LocalTime.now();
-            LocalDateTime ldt = ld.atTime(lt);
-            String ldtString = ldt.format(formatter);
+        LocalDate ld = LocalDate.now();
+        ld.format(dateFormatter);
 
-            System.out.println("What is the payment amount?");
-            double paymentAmount = scanner.nextDouble();
-            scanner.nextLine();
+        LocalTime lt = LocalTime.now();
+        String formatedLt =  lt.format(timeFormatter);
+        LocalTime newTimeFormat = LocalTime.parse(formatedLt,timeFormatter);
 
-            System.out.println("Please provide a description of payment.");
-            String paymentDescription = scanner.nextLine();
-            String paymentId = "P";
+        System.out.println("What is the payment amount?");
+        double paymentAmount = scanner.nextDouble();
+        scanner.nextLine();
 
-            return new Transaction(ldtString, paymentDescription,paymentId,paymentAmount);
+        System.out.println("Please provide a description of payment.");
+        String paymentDescription = scanner.nextLine();
+        String paymentId = "P";
+
+        return new Transaction(ld,newTimeFormat, paymentDescription,paymentId,paymentAmount);
     }
 
     public static void ledgerMenu(){
         boolean runningLedger = true;
         while(runningLedger){
-
+            System.out.println("\n------------------------ Ledger Menu -----------------------------\n");
             System.out.println("Please select a menu option from 1 - 5.");
             System.out.println("""
                   1. Display all entries.
@@ -117,9 +119,21 @@ public class Main {
 
             int userLedgerChoice = Integer.parseInt(scanner.nextLine());
             switch (userLedgerChoice){
-                case 1 -> displayAllEntries();
-                case 5 -> userMenu() ;
-                default -> System.out.println("Invalid input, please select from 1 - 5 option.");
+                case 1 :
+                    displayAllEntries();
+                    break;
+                case 2 :
+                    List<Transaction> depositTransactions = findTransactionsById("D");
+                    displayTransaction(depositTransactions);
+                    break;
+                case 3:
+                    List<Transaction> paymentTransactions = findTransactionsById("P");
+                    displayTransaction(paymentTransactions);
+                    break;
+                case 5:
+                    userMenu();
+                    break;
+                default: System.out.println("Invalid input, please select from 1 - 5 option.");
             }
             if (userLedgerChoice == 5){
                 runningLedger = false;
@@ -137,5 +151,73 @@ public class Main {
         }catch (IOException | InputMismatchException e){
             System.out.println(e.getMessage());
         }
+    }
+
+    public static List<Transaction> findTransactionsById(String idOfTransaction){
+        List<Transaction> transactions = getTransactionsFromFile("src/transaction.csv");
+        List<Transaction> matchingTransactions = new ArrayList<>();
+
+        for (Transaction transaction : transactions) {
+
+            if (transaction.getIdOfTransaction().equals(idOfTransaction)) {
+                matchingTransactions.add(transaction);
+            }
+        }
+        return matchingTransactions;
+    }
+
+    public static List<Transaction> getTransactionsFromFile(String filename){
+        List<Transaction> transactions = new ArrayList<>();
+        try (BufferedReader br = new BufferedReader(new FileReader(filename))){
+            String line;
+            while ((line = br.readLine()) != null){
+                String[] arrTransaction = line.split("\\|");
+                Transaction transaction = new Transaction( LocalDate.parse(arrTransaction[0],dateFormatter),LocalTime.parse(arrTransaction[1]),arrTransaction[2],arrTransaction[3],Double.parseDouble(arrTransaction[4]));
+                transactions.add(transaction);
+            }
+        }catch (IOException e){
+            System.out.println(e.getMessage());
+        }
+        return transactions;
+    }
+
+    public static void displayTransaction(List<Transaction> transactions){
+        for (Transaction t : transactions) {
+            System.out.printf("%s | %s | %s | %s | %.1f%n", t.getDate(), t.getTime(), t.getDescription(), t.getIdOfTransaction(), t.getTransactionAmount());
+        }
+    }
+
+    public static void reportsMenu (){
+        boolean runningReport = true;
+        while (runningReport){
+            System.out.println("\n---------------------------------- Report Menu ----------------------------------");
+            System.out.println("\nPlease select option from 1 - 6\n");
+            System.out.println("""
+                    1. Month to Date.
+                    2. Previous Month.
+                    3. Year to Date.
+                    4. Previous Year
+                    5. Search by Vendor
+                    6. Back""");
+            int reportUserChoice = Integer.parseInt(scanner.nextLine());
+            switch (reportUserChoice){
+                case 1:
+                    monthToDate("src/transaction.csv");
+                    ;
+
+            }
+        }
+    }
+
+    public static Map<LocalDate,List<Transaction> monthToDate(String filename){
+        List<Transaction> transactions = getTransactionsFromFile(filename);
+        Map<LocalDate,List<Transaction>> monthToDateTransactions = new HashMap<>();
+
+        for (Transaction transaction: transactions){
+            LocalDate date = transaction.getDate();
+            monthToDateTransactions.put(date,new ArrayList<>());
+            monthToDateTransactions.get(date).add(transaction);
+        }
+        return monthToDateTransactions;
     }
 }
