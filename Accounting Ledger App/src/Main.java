@@ -9,7 +9,7 @@ import java.util.*;
 
 public class Main {
     static Scanner scanner = new Scanner(System.in);
-    static DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+    static DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm:ss a");
     static DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     static String transactionFileName = "src/transaction.csv";
     static String testFileName = "src/test.csv";
@@ -64,7 +64,7 @@ public class Main {
     public static Transaction addDeposit(){
 
         LocalDate ld = LocalDate.now();
-        LocalTime lt = LocalTime.parse(LocalTime.now().format(timeFormatter));
+        LocalTime lt = LocalTime.now();
 
         System.out.println("What amount you would like to deposit?");
         double depositAmount = scanner.nextDouble();
@@ -80,7 +80,7 @@ public class Main {
     public static Transaction makePayment(){
 
         LocalDate ld = LocalDate.now();
-        LocalTime lt = LocalTime.parse(LocalTime.now().format(timeFormatter));
+        LocalTime lt = LocalTime.now();
 
         System.out.println("What is the payment amount?");
         double paymentAmount = scanner.nextDouble();
@@ -133,7 +133,6 @@ public class Main {
         try(BufferedReader bf = new BufferedReader(new FileReader(transactionFileName))){
             String line;
             while ((line = bf.readLine())!= null){
-
                 System.out.println(line);
             }
         }catch (IOException | InputMismatchException e){
@@ -160,7 +159,7 @@ public class Main {
             String line;
             while ((line = br.readLine()) != null){
                 String[] arrTransaction = line.split("\\|");
-                Transaction transaction = new Transaction( LocalDate.parse(arrTransaction[0],dateFormatter),LocalTime.parse(arrTransaction[1]),arrTransaction[2],arrTransaction[3],Double.parseDouble(arrTransaction[4]));
+                Transaction transaction = new Transaction( LocalDate.parse(arrTransaction[0],dateFormatter),LocalTime.parse(arrTransaction[1],timeFormatter),arrTransaction[2],arrTransaction[3],Double.parseDouble(arrTransaction[4]));
                 transactions.add(transaction);
             }
         }catch (IOException e){
@@ -170,8 +169,8 @@ public class Main {
     }
 
     public static void displayTransaction(List<Transaction> transactions){
-        for (Transaction t : transactions) {
-            System.out.printf("%s | %s | %s | %s | %.1f%n", t.getDate(), t.getTime(), t.getDescription(), t.getIdOfTransaction(), t.getTransactionAmount());
+        for (Transaction transaction : transactions) {
+            System.out.printf("%s | %s | %s | %s | %.1f%n", transaction.getDate().format(dateFormatter), transaction.getTime().format(timeFormatter), transaction.getDescription(), transaction.getIdOfTransaction(), transaction.getTransactionAmount());
         }
     }
 

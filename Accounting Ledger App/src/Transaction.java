@@ -30,7 +30,7 @@ public class Transaction {
     }
 
     public String toFileString() {
-    return date + "|" + time + "|" + description + "|" + idOfTransaction + "|" + transactionAmount;
+    return date.format(Main.dateFormatter) + "|" + time.format(Main.timeFormatter) + "|" + description + "|" + idOfTransaction + "|" + transactionAmount;
     }
 
     public LocalDate getDate() {
