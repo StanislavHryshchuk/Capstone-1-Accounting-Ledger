@@ -190,13 +190,18 @@ public class Main {
             int reportUserChoice = Integer.parseInt(scanner.nextLine());
             switch (reportUserChoice){
                 case 1:
-                    List<Transaction> sortedList = monthToDate(transactionFileName);
-                    addSortedList(testFileName,sortedList);
+                    List<Transaction> monthToDate = monthToDate(transactionFileName);
+                    addSortedList(testFileName,monthToDate);
                     readTestFile(testFileName);
                     break;
                 case 2:
                     List<Transaction> previousMonth = previousMonth(transactionFileName);
                     addSortedList(testFileName,previousMonth);
+                    readTestFile(testFileName);
+                    break;
+                case 3:
+                    List<Transaction> yearToDate = yearToDate(transactionFileName);
+                    addSortedList(testFileName,yearToDate);
                     readTestFile(testFileName);
                     break;
                 case 6:
@@ -229,7 +234,35 @@ public class Main {
         }
     }
 
+    public static List<Transaction> yearToDate(String fileName){
+        List<Transaction> yearToDate = new ArrayList<>();
 
+        LocalDate startOfTheYear = LocalDate.ofYearDay(2025,1);
+        LocalDate todayDate = LocalDate.parse(LocalDate.now().format(dateFormatter));
+
+        try(BufferedReader br = new BufferedReader(new FileReader(transactionFileName))) {
+            String line;
+            while ((line = br.readLine()) != null){
+                String [] arrTransaction = line.split("\\|");
+
+                LocalDate date = LocalDate.parse(arrTransaction[0],dateFormatter);
+                LocalTime time = LocalTime.parse(arrTransaction[1],timeFormatter);
+                String description = arrTransaction[2];
+                String id = arrTransaction[3];
+                double amount = Double.parseDouble(arrTransaction[4]);
+
+                if((date.isEqual(startOfTheYear) || date.isAfter(startOfTheYear)) && (date.isEqual(todayDate) || date.isBefore(todayDate))){
+                    Transaction transaction = new Transaction(date,time,description,id,amount);
+
+                    yearToDate.add(transaction);
+                }
+
+            }
+        }catch (IOException e){
+            System.out.println(e.getMessage());
+        }
+        return yearToDate;
+    }
 
     public static List<Transaction> previousMonth(String fileName){
         List<Transaction> previousMonth = new ArrayList<>();
