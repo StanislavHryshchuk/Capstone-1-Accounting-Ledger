@@ -191,17 +191,22 @@ public class Main {
             switch (reportUserChoice){
                 case 1:
                     List<Transaction> monthToDate = monthToDate(transactionFileName);
-                    addSortedList(testFileName,monthToDate);
+                    addList(testFileName,monthToDate);
                     readTestFile(testFileName);
                     break;
                 case 2:
                     List<Transaction> previousMonth = previousMonth(transactionFileName);
-                    addSortedList(testFileName,previousMonth);
+                    addList(testFileName,previousMonth);
                     readTestFile(testFileName);
                     break;
                 case 3:
                     List<Transaction> yearToDate = yearToDate(transactionFileName);
-                    addSortedList(testFileName,yearToDate);
+                    addList(testFileName,yearToDate);
+                    readTestFile(testFileName);
+                    break;
+                case 4:
+                    List<Transaction> previousYear = previousYear(transactionFileName);
+                    addList(testFileName,previousYear);
                     readTestFile(testFileName);
                     break;
                 case 6:
@@ -224,7 +229,7 @@ public class Main {
         }
     }
 
-    public static void addSortedList (String fileName, List<Transaction> nameOfList){
+    public static void addList (String fileName, List<Transaction> nameOfList){
         try (FileWriter fw = new FileWriter(fileName)){
             for(Transaction transaction: nameOfList){
                 fw.write(transaction.toFileString() + "\n");
@@ -234,13 +239,43 @@ public class Main {
         }
     }
 
+    public static List<Transaction> previousYear(String fileName){
+        List<Transaction> previousYear = new ArrayList<>();
+        LocalDate todayDate = LocalDate.now();
+        LocalDate startOfPreviousYear = todayDate.minusYears(1).withDayOfYear(1);
+        LocalDate endOfPreviousYear = startOfPreviousYear.withDayOfYear(startOfPreviousYear.lengthOfYear());
+
+        try(BufferedReader br = new BufferedReader(new FileReader(fileName))) {
+            String line;
+            while ((line = br.readLine()) != null){
+                String [] arrTransaction = line.split("\\|");
+
+                LocalDate date = LocalDate.parse(arrTransaction[0],dateFormatter);
+                LocalTime time = LocalTime.parse(arrTransaction[1],timeFormatter);
+                String description = arrTransaction[2];
+                String id = arrTransaction[3];
+                double amount = Double.parseDouble(arrTransaction[4]);
+
+                if ((date.isEqual(startOfPreviousYear) || date.isAfter(startOfPreviousYear)) && (date.isEqual(endOfPreviousYear) || date.isBefore(endOfPreviousYear))){
+
+                    Transaction transaction = new Transaction(date,time,description,id,amount);
+
+                    previousYear.add(transaction);
+                }
+            }
+        }catch (IOException e){
+            System.out.println(e.getMessage());
+        }
+        return previousYear;
+    }
+
     public static List<Transaction> yearToDate(String fileName){
         List<Transaction> yearToDate = new ArrayList<>();
+        LocalDate todayDate = LocalDate.now();
+        LocalDate startOfTheYear = todayDate.withDayOfYear(1);
 
-        LocalDate startOfTheYear = LocalDate.ofYearDay(2025,1);
-        LocalDate todayDate = LocalDate.parse(LocalDate.now().format(dateFormatter));
 
-        try(BufferedReader br = new BufferedReader(new FileReader(transactionFileName))) {
+        try(BufferedReader br = new BufferedReader(new FileReader(fileName))) {
             String line;
             while ((line = br.readLine()) != null){
                 String [] arrTransaction = line.split("\\|");
@@ -267,7 +302,7 @@ public class Main {
     public static List<Transaction> previousMonth(String fileName){
         List<Transaction> previousMonth = new ArrayList<>();
 
-        LocalDate dateToday = LocalDate.parse(LocalDate.now().format(dateFormatter));
+        LocalDate dateToday = LocalDate.now();
 
         LocalDate startOfPreviousMonth = dateToday.minusMonths(1).withDayOfMonth(1);
 
@@ -300,7 +335,7 @@ public class Main {
     public static List<Transaction> monthToDate(String fileName){
         List<Transaction> monthToDateTransactions = new ArrayList<>();
 
-        LocalDate dateToday = LocalDate.parse(LocalDate.now().format(dateFormatter));
+        LocalDate dateToday = LocalDate.now();
         LocalDate startOfMonth = dateToday.withDayOfMonth(1);
 
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))){
