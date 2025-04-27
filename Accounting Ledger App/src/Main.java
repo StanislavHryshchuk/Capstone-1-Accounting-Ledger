@@ -3,22 +3,20 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class Main {
     static Scanner scanner = new Scanner(System.in);
-    static DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("KK:mm:ss a");
+    static DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
     static DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
 
     public static void main(String[] args) {
 
-        System.out.println("\n-------------------- Welcome to Accounting Ledger Application --------------\n");
+        System.out.println("\n-------------------- Welcome to Accounting Ledger Application --------------");
         userMenu();
-
-
     }
 
     public static void userMenu(){
@@ -50,15 +48,12 @@ public class Main {
                     break;
                 default: System.out.println("Invalid input, please select from 1 - 4 option.");
             }
-            if(userChoice == 3){
-                running = false;
-            }
         }
     }
 
-    public static void addNewTransaction (String filename, Transaction t){
+    public static void addNewTransaction (String filename, Transaction transaction){
         try (FileWriter fw = new FileWriter(filename,true)){
-            fw.write(t.toFileString() + "\n");
+            fw.write(transaction.toFileString() + "\n");
         } catch (IOException e){
             System.out.println(e.getMessage());
         }
@@ -67,12 +62,7 @@ public class Main {
     public static Transaction addDeposit(){
 
         LocalDate ld = LocalDate.now();
-        ld.format(dateFormatter);
-
-        LocalTime lt = LocalTime.now();
-        String formatedLt =  lt.format(timeFormatter);
-        LocalTime newTimeFormat = LocalTime.parse(formatedLt,timeFormatter);
-
+        LocalTime lt = LocalTime.parse(LocalTime.now().format(timeFormatter));
 
         System.out.println("What amount you would like to deposit?");
         double depositAmount = scanner.nextDouble();
@@ -82,17 +72,13 @@ public class Main {
         String depositDescription = scanner.nextLine();
         String depositId = "D";
 
-        return new Transaction(ld,newTimeFormat,depositDescription,depositId,depositAmount);
+        return new Transaction(ld,lt,depositDescription,depositId,depositAmount);
     }
 
     public static Transaction makePayment(){
 
         LocalDate ld = LocalDate.now();
-        ld.format(dateFormatter);
-
-        LocalTime lt = LocalTime.now();
-        String formatedLt =  lt.format(timeFormatter);
-        LocalTime newTimeFormat = LocalTime.parse(formatedLt,timeFormatter);
+        LocalTime lt = LocalTime.parse(LocalTime.now().format(timeFormatter));
 
         System.out.println("What is the payment amount?");
         double paymentAmount = scanner.nextDouble();
@@ -102,7 +88,7 @@ public class Main {
         String paymentDescription = scanner.nextLine();
         String paymentId = "P";
 
-        return new Transaction(ld,newTimeFormat, paymentDescription,paymentId,paymentAmount);
+        return new Transaction(ld,lt, paymentDescription,paymentId,paymentAmount);
     }
 
     public static void ledgerMenu(){
@@ -130,15 +116,15 @@ public class Main {
                     List<Transaction> paymentTransactions = findTransactionsById("P");
                     displayTransaction(paymentTransactions);
                     break;
+                case 4:
+                    reportsMenu();
+                    break;
                 case 5:
-                    userMenu();
+                    runningLedger = false;
                     break;
                 default: System.out.println("Invalid input, please select from 1 - 5 option.");
             }
-            if (userLedgerChoice == 5){
-                runningLedger = false;
-            }
-        }
+                    }
     }
 
     public static void displayAllEntries(){
@@ -202,21 +188,67 @@ public class Main {
             int reportUserChoice = Integer.parseInt(scanner.nextLine());
             switch (reportUserChoice){
                 case 1:
-                    monthToDate("src/transaction.csv");
-                    ;
-
+                    List<Transaction> sortedList = monthToDate("src/transaction.csv");
+                    addSortedList("src/test.csv",sortedList);
+                    readTestFile("src/test.csv");
+                    break;
+                case 6:
+                    runningReport = false;
+                    break;
+                default:
+                    System.out.println("Invalid input, please select from 1- 6 option.");
             }
         }
     }
 
-    public static Map<LocalDate,List<Transaction> monthToDate(String filename){
-        List<Transaction> transactions = getTransactionsFromFile(filename);
-        Map<LocalDate,List<Transaction>> monthToDateTransactions = new HashMap<>();
+    public static void readTestFile (String fileName){
+        try(BufferedReader bf = new BufferedReader(new FileReader(fileName))) {
+            String line;
+            while ((line = bf.readLine()) != null){
+                System.out.println(line);
+            }
+        }catch (IOException e){
+            System.out.println(e.getMessage());
+        }
+    }
 
-        for (Transaction transaction: transactions){
-            LocalDate date = transaction.getDate();
-            monthToDateTransactions.put(date,new ArrayList<>());
-            monthToDateTransactions.get(date).add(transaction);
+    public static void addSortedList (String fileName, List<Transaction> monthToDateTransactions){
+        try (FileWriter fw = new FileWriter(fileName)){
+            for(Transaction transaction: monthToDateTransactions){
+                fw.write(transaction.toFileString() + "\n");
+            }
+        }catch (IOException e){
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public static List<Transaction> monthToDate(String fileName){
+        List<Transaction> monthToDateTransactions = new ArrayList<>();
+
+        LocalDate dateToday = LocalDate.parse(LocalDate.now().format(dateFormatter));
+        LocalDate startOfMonth = dateToday.withDayOfMonth(1);
+
+        try (BufferedReader br = new BufferedReader(new FileReader(fileName))){
+            String line;
+            while ((line = br.readLine()) != null){
+
+                String[] arrTransaction = line.split("\\|");
+
+                LocalDate date = LocalDate.parse(arrTransaction[0],dateFormatter);
+                LocalTime time = LocalTime.parse(arrTransaction[1],timeFormatter);
+                String description = arrTransaction[2];
+                String id = arrTransaction[3];
+                double amount = Double.parseDouble(arrTransaction[4]);
+
+                if((date.isEqual(startOfMonth) || date.isAfter(startOfMonth)) && ((date.isEqual(dateToday)) || (date.isBefore(dateToday)))){
+
+                    Transaction transaction = new Transaction(date,time,description,id,amount);
+
+                    monthToDateTransactions.add(transaction);
+                }
+            }
+        }catch (IOException e){
+            System.out.println(e.getMessage());
         }
         return monthToDateTransactions;
     }
