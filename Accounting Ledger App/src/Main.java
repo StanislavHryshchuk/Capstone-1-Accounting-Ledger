@@ -11,6 +11,8 @@ public class Main {
     static Scanner scanner = new Scanner(System.in);
     static DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
     static DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    static String transactionFileName = "src/transaction.csv";
+    static String testFileName = "src/test.csv";
 
 
     public static void main(String[] args) {
@@ -34,11 +36,11 @@ public class Main {
             switch (userChoice){
                 case 1:
                     Transaction newDeposit = addDeposit();
-                    addNewTransaction("src/transaction.csv", newDeposit);
+                    addNewTransaction(transactionFileName, newDeposit);
                     break;
                 case 2:
                     Transaction newPayment = makePayment();
-                    addNewTransaction("src/transaction.csv",newPayment);
+                    addNewTransaction(transactionFileName,newPayment);
                     break;
                 case 3:
                     ledgerMenu();
@@ -94,7 +96,7 @@ public class Main {
     public static void ledgerMenu(){
         boolean runningLedger = true;
         while(runningLedger){
-            System.out.println("\n------------------------ Ledger Menu -----------------------------\n");
+            System.out.println("\n------------------------------ Ledger Menu ---------------------------------\n");
             System.out.println("Please select a menu option from 1 - 5.");
             System.out.println("""
                   1. Display all entries.
@@ -124,11 +126,11 @@ public class Main {
                     break;
                 default: System.out.println("Invalid input, please select from 1 - 5 option.");
             }
-                    }
+        }
     }
 
     public static void displayAllEntries(){
-        try(BufferedReader bf = new BufferedReader(new FileReader("src/transaction.csv"))){
+        try(BufferedReader bf = new BufferedReader(new FileReader(transactionFileName))){
             String line;
             while ((line = bf.readLine())!= null){
 
@@ -140,7 +142,7 @@ public class Main {
     }
 
     public static List<Transaction> findTransactionsById(String idOfTransaction){
-        List<Transaction> transactions = getTransactionsFromFile("src/transaction.csv");
+        List<Transaction> transactions = getTransactionsFromFile(transactionFileName);
         List<Transaction> matchingTransactions = new ArrayList<>();
 
         for (Transaction transaction : transactions) {
@@ -177,7 +179,7 @@ public class Main {
         boolean runningReport = true;
         while (runningReport){
             System.out.println("\n---------------------------------- Report Menu ----------------------------------");
-            System.out.println("\nPlease select option from 1 - 6\n");
+            System.out.println("\nPlease select option from 1 - 6.");
             System.out.println("""
                     1. Month to Date.
                     2. Previous Month.
@@ -188,9 +190,14 @@ public class Main {
             int reportUserChoice = Integer.parseInt(scanner.nextLine());
             switch (reportUserChoice){
                 case 1:
-                    List<Transaction> sortedList = monthToDate("src/transaction.csv");
-                    addSortedList("src/test.csv",sortedList);
-                    readTestFile("src/test.csv");
+                    List<Transaction> sortedList = monthToDate(transactionFileName);
+                    addSortedList(testFileName,sortedList);
+                    readTestFile(testFileName);
+                    break;
+                case 2:
+                    List<Transaction> previousMonth = previousMonth(transactionFileName);
+                    addSortedList(testFileName,previousMonth);
+                    readTestFile(testFileName);
                     break;
                 case 6:
                     runningReport = false;
@@ -212,14 +219,49 @@ public class Main {
         }
     }
 
-    public static void addSortedList (String fileName, List<Transaction> monthToDateTransactions){
+    public static void addSortedList (String fileName, List<Transaction> nameOfList){
         try (FileWriter fw = new FileWriter(fileName)){
-            for(Transaction transaction: monthToDateTransactions){
+            for(Transaction transaction: nameOfList){
                 fw.write(transaction.toFileString() + "\n");
             }
         }catch (IOException e){
             System.out.println(e.getMessage());
         }
+    }
+
+
+
+    public static List<Transaction> previousMonth(String fileName){
+        List<Transaction> previousMonth = new ArrayList<>();
+
+        LocalDate dateToday = LocalDate.parse(LocalDate.now().format(dateFormatter));
+
+        LocalDate startOfPreviousMonth = dateToday.minusMonths(1).withDayOfMonth(1);
+
+        LocalDate endOfPreviousMonth = startOfPreviousMonth.withDayOfMonth(startOfPreviousMonth.lengthOfMonth());
+
+        try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
+            String line;
+            while ((line = br.readLine()) != null){
+                String [] arrTransaction = line.split("\\|");
+
+                LocalDate date = LocalDate.parse(arrTransaction[0],dateFormatter);
+                LocalTime time = LocalTime.parse(arrTransaction[1],timeFormatter);
+                String description = arrTransaction[2];
+                String id = arrTransaction[3];
+                double amount = Double.parseDouble(arrTransaction[4]);
+
+                if((date.isEqual(startOfPreviousMonth) || date.isAfter(startOfPreviousMonth)) && (date.isEqual(endOfPreviousMonth) || date.isBefore(endOfPreviousMonth))){
+
+                    Transaction transaction = new Transaction(date,time,description,id,amount);
+
+                    previousMonth.add(transaction);
+                }
+            }
+        }catch (IOException e){
+            System.out.println(e.getMessage());
+        }
+        return  previousMonth;
     }
 
     public static List<Transaction> monthToDate(String fileName){
