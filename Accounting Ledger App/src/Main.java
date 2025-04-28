@@ -117,10 +117,12 @@ public class Main {
                     break;
                 case 2 :
                     List<Transaction> depositTransactions = findTransactionsById("D");
+                    depositTransactions.sort(Comparator.comparing(Transaction::getDate).reversed());
                     displayTransaction(depositTransactions);
                     break;
                 case 3:
                     List<Transaction> paymentTransactions = findTransactionsById("P");
+                    paymentTransactions.sort(Comparator.comparing(Transaction::getDate).reversed());
                     displayTransaction(paymentTransactions);
                     break;
                 case 4:
