@@ -1,26 +1,39 @@
-2025-04-27|12:14:06 PM|Salary|D|1500.0
-2025-03-26|09:30:00 AM|Coffee Shop|P|-5.5
-2024-12-15|08:00:30 PM|Holiday Shopping|P|-250.0
-2024-11-20|01:45:00 PM|Electronics Store|P|-999.99
-2025-01-10|10:05:15 AM|Gift Money|D|300.0
-2024-08-01|02:20:00 PM|Streaming Service|P|-15.0
-2025-02-14|06:00:00 PM|Valentine Dinner|P|-75.0
-2025-04-23|05:30:45 PM|Groceries|P|-120.25
-2025-03-10|11:15:00 AM|Grocery Store|P|-130.0
-2025-02-28|03:50:00 PM|Car Payment|P|-400.0
-2024-10-12|04:30:00 PM|Insurance Bill|P|-200.0
-2025-01-20|07:00:00 AM|Side Job|D|450.0
-2024-09-14|09:10:00 AM|Gas Station|P|-60.0
-2025-04-26|08:45:00 AM|Starbucks|P|-6.5
-2024-07-30|07:45:00 PM|Movie Night|P|-45.0
-2025-02-05|11:00:00 AM|Consulting Work|D|700.0
-2025-04-22|07:30:00 PM|Netflix Subscription|P|-15.99
-2025-03-15|08:00:00 PM|Concert|P|-120.0
-2024-12-01|06:45:00 PM|Winter Clothing|P|-350.0
-2024-11-05|02:00:00 PM|Charity Donation|P|-100.0
-2025-04-21|08:10:15 AM|Bonus Payment|D|250.0
-2024-08-05|12:30:00 PM|Festival Ticket|P|-75.0
-2024-09-29|09:50:00 PM|Restaurant|P|-90.0
-2025-03-30|03:15:00 PM|Gym Membership|P|-45.0
-2025-04-10|10:10:00 AM|Tax Refund|D|1200.0
-2025-02-20|08:00:00 PM|Music Event|P|-140.0
+2025-04-27|12:14:06 PM|Salary|Employer|D|1500.0
+2025-03-26|09:30:00 AM|Coffee Shop|Starbucks|P|-5.5
+2024-12-15|08:00:30 PM|Holiday Shopping|Walmart|P|-250.0
+2024-11-20|01:45:00 PM|Electronics Store|Best Buy|P|-999.99
+2025-01-10|10:05:15 AM|Gift Money|Family|D|300.0
+2024-08-01|02:20:00 PM|Streaming Service|Netflix|P|-15.0
+2025-02-14|06:00:00 PM|Valentine Dinner|Olive Garden|P|-75.0
+2025-04-23|05:30:45 PM|Groceries|Safeway|P|-120.25
+2025-03-10|11:15:00 AM|Grocery Store|Trader Joe's|P|-130.0
+2025-02-28|03:50:00 PM|Car Payment|Ford Motors|P|-400.0
+2024-10-12|04:30:00 PM|Insurance Bill|State Farm|P|-200.0
+2025-01-20|07:00:00 AM|Side Job|Upwork|D|450.0
+2024-09-14|09:10:00 AM|Gas Station|Shell|P|-60.0
+2025-04-26|08:45:00 AM|Starbucks|Starbucks|P|-6.5
+2024-07-30|07:45:00 PM|Movie Night|AMC Theaters|P|-45.0
+2025-02-05|11:00:00 AM|Consulting Work|Freelance|D|700.0
+2025-04-22|07:30:00 PM|Netflix Subscription|Netflix|P|-15.99
+2025-03-15|08:00:00 PM|Concert|Ticketmaster|P|-120.0
+2024-12-01|06:45:00 PM|Winter Clothing|Macy's|P|-350.0
+2024-11-05|02:00:00 PM|Charity Donation|Red Cross|P|-100.0
+2025-04-21|08:10:15 AM|Bonus Payment|Employer|D|250.0
+2024-08-05|12:30:00 PM|Festival Ticket|Eventbrite|P|-75.0
+2024-09-29|09:50:00 PM|Restaurant|Chili's|P|-90.0
+2025-03-30|03:15:00 PM|Gym Membership|Planet Fitness|P|-45.0
+2025-04-10|10:10:00 AM|Tax Refund|IRS|D|1200.0
+2025-02-20|08:00:00 PM|Music Event|Live Nation|P|-140.0
+2024-10-18|03:00:00 PM|Doctor Visit|Kaiser Permanente|P|-250.0
+2025-01-05|09:25:00 AM|New Year's Gift|Family|D|500.0
+2025-04-20|05:00:00 PM|Grocery Store|Safeway|P|-70.0
+2024-07-20|04:10:00 PM|Amusement Park|Disneyland|P|-80.0
+2025-01-18|11:30:00 AM|Online Course Refund|Udemy|D|100.0
+2024-12-22|07:20:00 PM|Christmas Lights|Home Depot|P|-60.0
+2025-02-25|10:00:00 AM|Gas Station|Chevron|P|-55.0
+2025-03-05|07:00:00 PM|Home Supplies|Lowe's|P|-110.0
+2024-08-18|05:50:00 PM|New Shoes|Nike|P|-85.0
+2024-11-10|09:30:00 AM|Internet Bill|Comcast|P|-80.0
+2025-04-05|06:15:00 PM|Birthday Gift|Amazon|P|-45.0
+2024-10-03|11:45:00 AM|Cafe Lunch|Starbucks|P|-25.0
+2024-09-07|02:15:00 PM|Streaming Service|Hulu|P|-14.0

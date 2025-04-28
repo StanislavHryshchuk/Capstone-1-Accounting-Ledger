@@ -17,7 +17,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        System.out.println("\n-------------------- Welcome to Accounting Ledger Application --------------");
+        System.out.println("\n-------------------- Welcome to Accounting Ledger Application -------------------------");
         userMenu();
     }
 
@@ -70,11 +70,14 @@ public class Main {
         double depositAmount = scanner.nextDouble();
         scanner.nextLine();
 
-        System.out.println("Please provide a description of deposit.");
+        System.out.println("Please provide a description of deposit: ");
         String depositDescription = scanner.nextLine();
+        System.out.println("Please enter Vendor name: ");
+        String vendor = scanner.nextLine();
+
         String depositId = "D";
 
-        return new Transaction(ld,lt,depositDescription,depositId,depositAmount);
+        return new Transaction(ld,lt,depositDescription,vendor,depositId,depositAmount);
     }
 
     public static Transaction makePayment(){
@@ -88,9 +91,11 @@ public class Main {
 
         System.out.println("Please provide a description of payment.");
         String paymentDescription = scanner.nextLine();
+        System.out.println("Please enter the Vendor name: ");
+        String vendor = scanner.nextLine();
         String paymentId = "P";
 
-        return new Transaction(ld,lt, paymentDescription,paymentId,paymentAmount);
+        return new Transaction(ld,lt, paymentDescription,vendor,paymentId,paymentAmount);
     }
 
     public static void ledgerMenu(){
@@ -159,7 +164,7 @@ public class Main {
             String line;
             while ((line = br.readLine()) != null){
                 String[] arrTransaction = line.split("\\|");
-                Transaction transaction = new Transaction( LocalDate.parse(arrTransaction[0],dateFormatter),LocalTime.parse(arrTransaction[1],timeFormatter),arrTransaction[2],arrTransaction[3],Double.parseDouble(arrTransaction[4]));
+                Transaction transaction = new Transaction(LocalDate.parse(arrTransaction[0],dateFormatter),LocalTime.parse(arrTransaction[1],timeFormatter),arrTransaction[2],arrTransaction[3],arrTransaction[4],Double.parseDouble(arrTransaction[5]));
                 transactions.add(transaction);
             }
         }catch (IOException e){
@@ -170,7 +175,7 @@ public class Main {
 
     public static void displayTransaction(List<Transaction> transactions){
         for (Transaction transaction : transactions) {
-            System.out.printf("%s | %s | %s | %s | %.1f%n", transaction.getDate().format(dateFormatter), transaction.getTime().format(timeFormatter), transaction.getDescription(), transaction.getIdOfTransaction(), transaction.getTransactionAmount());
+            System.out.printf("%s | %s | %s | %s | %s | %.1f%n", transaction.getDate().format(dateFormatter), transaction.getTime().format(timeFormatter), transaction.getDescription(),transaction.getVendor(), transaction.getIdOfTransaction(), transaction.getTransactionAmount());
         }
     }
 
@@ -189,30 +194,41 @@ public class Main {
             int reportUserChoice = Integer.parseInt(scanner.nextLine());
             switch (reportUserChoice){
                 case 1:
-                    List<Transaction> monthToDate = monthToDate(transactionFileName);
-                    addList(testFileName,monthToDate);
+                    List<Transaction> sortMonthToDate = monthToDate(transactionFileName);
+                    sortMonthToDate.sort(Comparator.comparing(Transaction::getDate).reversed());
+                    addList(testFileName,sortMonthToDate);
                     readTestFile(testFileName);
+
                     break;
                 case 2:
-                    List<Transaction> previousMonth = previousMonth(transactionFileName);
-                    addList(testFileName,previousMonth);
+                    List<Transaction> sortPreviousMonth = previousMonth(transactionFileName);
+                    sortPreviousMonth.sort(Comparator.comparing(Transaction::getDate).reversed());
+                    addList(testFileName,sortPreviousMonth);
                     readTestFile(testFileName);
                     break;
                 case 3:
-                    List<Transaction> yearToDate = yearToDate(transactionFileName);
-                    addList(testFileName,yearToDate);
+                    List<Transaction> sortYearToDate = yearToDate(transactionFileName);
+                    sortYearToDate.sort(Comparator.comparing(Transaction::getDate).reversed());
+                    addList(testFileName,sortYearToDate);
                     readTestFile(testFileName);
                     break;
                 case 4:
-                    List<Transaction> previousYear = previousYear(transactionFileName);
-                    addList(testFileName,previousYear);
+                    List<Transaction> sortPreviousYear = previousYear(transactionFileName);
+                    sortPreviousYear.sort(Comparator.comparing(Transaction::getDate).reversed());
+                    addList(testFileName,sortPreviousYear);
+                    readTestFile(testFileName);
+                    break;
+                case 5:
+                    List<Transaction> sortSerchByVendor = searchByVendor(transactionFileName);
+                    sortSerchByVendor.sort(Comparator.comparing(Transaction::getVendor));
+                    addList(testFileName,sortSerchByVendor);
                     readTestFile(testFileName);
                     break;
                 case 6:
                     runningReport = false;
                     break;
                 default:
-                    System.out.println("Invalid input, please select from 1- 6 option.");
+                    System.out.println("Invalid input, please select from 1 - 6 option.");
             }
         }
     }
@@ -238,6 +254,35 @@ public class Main {
         }
     }
 
+    public static List<Transaction> searchByVendor (String fileName){
+        List<Transaction> searchByVendor = new ArrayList<>();
+        System.out.println("Please enter the Vendor: ");
+        String userEnterVendor = scanner.nextLine();
+
+            try(BufferedReader br = new BufferedReader(new FileReader(fileName))){
+                String line;
+                while ((line = br.readLine()) != null){
+                    String[] arrTransaction = line.split("\\|");
+
+                    LocalDate date = LocalDate.parse(arrTransaction[0],dateFormatter);
+                    LocalTime time = LocalTime.parse(arrTransaction[1],timeFormatter);
+                    String description = arrTransaction[2];
+                    String vendor = arrTransaction[3];
+                    String id = arrTransaction[4];
+                    double amount = Double.parseDouble(arrTransaction[5]);
+
+                    if(vendor.equals(userEnterVendor)){
+                        Transaction transaction = new Transaction(date,time,description,vendor,id,amount);
+
+                        searchByVendor.add(transaction);
+                    }
+                }
+            }catch (IOException e){
+                System.out.println(e.getMessage());
+            }
+        return searchByVendor;
+    }
+
     public static List<Transaction> previousYear(String fileName){
         List<Transaction> previousYear = new ArrayList<>();
         LocalDate todayDate = LocalDate.now();
@@ -252,12 +297,13 @@ public class Main {
                 LocalDate date = LocalDate.parse(arrTransaction[0],dateFormatter);
                 LocalTime time = LocalTime.parse(arrTransaction[1],timeFormatter);
                 String description = arrTransaction[2];
-                String id = arrTransaction[3];
-                double amount = Double.parseDouble(arrTransaction[4]);
+                String vendor = arrTransaction[3];
+                String id = arrTransaction[4];
+                double amount = Double.parseDouble(arrTransaction[5]);
 
                 if ((date.isEqual(startOfPreviousYear) || date.isAfter(startOfPreviousYear)) && (date.isEqual(endOfPreviousYear) || date.isBefore(endOfPreviousYear))){
 
-                    Transaction transaction = new Transaction(date,time,description,id,amount);
+                    Transaction transaction = new Transaction(date,time,description,vendor,id,amount);
 
                     previousYear.add(transaction);
                 }
@@ -282,11 +328,12 @@ public class Main {
                 LocalDate date = LocalDate.parse(arrTransaction[0],dateFormatter);
                 LocalTime time = LocalTime.parse(arrTransaction[1],timeFormatter);
                 String description = arrTransaction[2];
-                String id = arrTransaction[3];
-                double amount = Double.parseDouble(arrTransaction[4]);
+                String vendor = arrTransaction[3];
+                String id = arrTransaction[4];
+                double amount = Double.parseDouble(arrTransaction[5]);
 
                 if((date.isEqual(startOfTheYear) || date.isAfter(startOfTheYear)) && (date.isEqual(todayDate) || date.isBefore(todayDate))){
-                    Transaction transaction = new Transaction(date,time,description,id,amount);
+                    Transaction transaction = new Transaction(date,time,description,vendor,id,amount);
 
                     yearToDate.add(transaction);
                 }
@@ -315,12 +362,13 @@ public class Main {
                 LocalDate date = LocalDate.parse(arrTransaction[0],dateFormatter);
                 LocalTime time = LocalTime.parse(arrTransaction[1],timeFormatter);
                 String description = arrTransaction[2];
-                String id = arrTransaction[3];
-                double amount = Double.parseDouble(arrTransaction[4]);
+                String vendor = arrTransaction[3];
+                String id = arrTransaction[4];
+                double amount = Double.parseDouble(arrTransaction[5]);
 
                 if((date.isEqual(startOfPreviousMonth) || date.isAfter(startOfPreviousMonth)) && (date.isEqual(endOfPreviousMonth) || date.isBefore(endOfPreviousMonth))){
 
-                    Transaction transaction = new Transaction(date,time,description,id,amount);
+                    Transaction transaction = new Transaction(date,time,description,vendor,id,amount);
 
                     previousMonth.add(transaction);
                 }
@@ -346,12 +394,13 @@ public class Main {
                 LocalDate date = LocalDate.parse(arrTransaction[0],dateFormatter);
                 LocalTime time = LocalTime.parse(arrTransaction[1],timeFormatter);
                 String description = arrTransaction[2];
-                String id = arrTransaction[3];
-                double amount = Double.parseDouble(arrTransaction[4]);
+                String vendor = arrTransaction[3];
+                String id = arrTransaction[4];
+                double amount = Double.parseDouble(arrTransaction[5]);
 
                 if((date.isEqual(startOfMonth) || date.isAfter(startOfMonth)) && ((date.isEqual(dateToday)) || (date.isBefore(dateToday)))){
 
-                    Transaction transaction = new Transaction(date,time,description,id,amount);
+                    Transaction transaction = new Transaction(date,time,description,vendor,id,amount);
 
                     monthToDateTransactions.add(transaction);
                 }

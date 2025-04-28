@@ -11,26 +11,37 @@ public class Transaction {
     private double transactionAmount;
     private String paymentDescription;
     private String paymentId;
+    private String vendor;
 
 
 
     //Deposit Constructor
-    public Transaction (LocalDate date,LocalTime time,String description, String idOfTransaction, double transactionAmount){
+    public Transaction (LocalDate date, LocalTime time, String description, String vendor, String idOfTransaction, double transactionAmount){
         this.date = date;
         this.time = time;
         this.description = description;
         this.transactionAmount = transactionAmount;
         this.idOfTransaction = idOfTransaction;
+        this.vendor = vendor;
     }
-    public Transaction (LocalTime time,String description, String idOfTransaction, double transactionAmount){
+    public Transaction (LocalTime time,String description,String vendor ,String idOfTransaction,double transactionAmount){
         this.time = time;
         this.description = description;
         this.transactionAmount = transactionAmount;
         this.idOfTransaction = idOfTransaction;
+        this.vendor = vendor;
     }
 
     public String toFileString() {
-    return date.format(Main.dateFormatter) + "|" + time.format(Main.timeFormatter) + "|" + description + "|" + idOfTransaction + "|" + transactionAmount;
+    return date.format(Main.dateFormatter) + "|" + time.format(Main.timeFormatter) + "|" + description + "|" + vendor + "|" + idOfTransaction + "|" + transactionAmount;
+    }
+
+    public String getVendor() {
+        return vendor;
+    }
+
+    public void setVendor(String vendor) {
+        this.vendor = vendor;
     }
 
     public LocalDate getDate() {
