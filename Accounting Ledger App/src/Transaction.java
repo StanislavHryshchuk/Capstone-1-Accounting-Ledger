@@ -1,7 +1,10 @@
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 public class Transaction {
+    // Combine
+    private LocalDateTime dateTime;
     private LocalDate date;
     private LocalTime time;
     private String stringDate;
@@ -17,6 +20,8 @@ public class Transaction {
 
     //Deposit Constructor
     public Transaction (LocalDate date, LocalTime time, String description, String vendor, String idOfTransaction, double transactionAmount){
+
+        this.dateTime = LocalDateTime.of(date,time);
         this.date = date;
         this.time = time;
         this.description = description;
@@ -90,5 +95,13 @@ public class Transaction {
 
     public void setPaymentId(String paymentId) {
         this.paymentId = paymentId;
+    }
+
+    public LocalDateTime getDateTime() {
+        return dateTime;
+    }
+
+    public void setDateTime(LocalDateTime dateTime) {
+        this.dateTime = dateTime;
     }
 }

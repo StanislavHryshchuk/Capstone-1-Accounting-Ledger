@@ -3,6 +3,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -72,6 +73,7 @@ public class Main {
 
         System.out.println("Please provide a description of deposit: ");
         String depositDescription = scanner.nextLine();
+
         System.out.println("Please enter Vendor name: ");
         String vendor = scanner.nextLine();
 
@@ -86,11 +88,12 @@ public class Main {
         LocalTime lt = LocalTime.now();
 
         System.out.println("What is the payment amount?");
-        double paymentAmount = scanner.nextDouble();
+        double paymentAmount = scanner.nextDouble() * -1;
         scanner.nextLine();
 
         System.out.println("Please provide a description of payment.");
         String paymentDescription = scanner.nextLine();
+
         System.out.println("Please enter the Vendor name: ");
         String vendor = scanner.nextLine();
         String paymentId = "P";
@@ -113,7 +116,9 @@ public class Main {
             int userLedgerChoice = Integer.parseInt(scanner.nextLine());
             switch (userLedgerChoice){
                 case 1 :
-                    displayAllEntries();
+                    List<Transaction> allTransactions = getTransactionsFromFile(transactionFileName);
+                    allTransactions.sort(Comparator.comparing(Transaction::getDate).reversed());
+                    displayTransaction(allTransactions);
                     break;
                 case 2 :
                     List<Transaction> depositTransactions = findTransactionsById("D");
@@ -136,17 +141,6 @@ public class Main {
         }
     }
 
-    public static void displayAllEntries(){
-        try(BufferedReader bf = new BufferedReader(new FileReader(transactionFileName))){
-            String line;
-            while ((line = bf.readLine())!= null){
-                System.out.println(line);
-            }
-        }catch (IOException | InputMismatchException e){
-            System.out.println(e.getMessage());
-        }
-    }
-
     public static List<Transaction> findTransactionsById(String idOfTransaction){
         List<Transaction> transactions = getTransactionsFromFile(transactionFileName);
         List<Transaction> matchingTransactions = new ArrayList<>();
@@ -160,13 +154,14 @@ public class Main {
         return matchingTransactions;
     }
 
-    public static List<Transaction> getTransactionsFromFile(String filename){
+    public static List<Transaction> getTransactionsFromFile(String fileName){
         List<Transaction> transactions = new ArrayList<>();
-        try (BufferedReader br = new BufferedReader(new FileReader(filename))){
+        try (BufferedReader br = new BufferedReader(new FileReader(fileName))){
             String line;
             while ((line = br.readLine()) != null){
                 String[] arrTransaction = line.split("\\|");
                 Transaction transaction = new Transaction(LocalDate.parse(arrTransaction[0],dateFormatter),LocalTime.parse(arrTransaction[1],timeFormatter),arrTransaction[2],arrTransaction[3],arrTransaction[4],Double.parseDouble(arrTransaction[5]));
+
                 transactions.add(transaction);
             }
         }catch (IOException e){
@@ -177,7 +172,7 @@ public class Main {
 
     public static void displayTransaction(List<Transaction> transactions){
         for (Transaction transaction : transactions) {
-            System.out.printf("%s | %s | %s | %s | %s | %.1f%n", transaction.getDate().format(dateFormatter), transaction.getTime().format(timeFormatter), transaction.getDescription(),transaction.getVendor(), transaction.getIdOfTransaction(), transaction.getTransactionAmount());
+            System.out.printf("%s | %s | %s | %s | %s | %.2f%n", transaction.getDate().format(dateFormatter), transaction.getTime().format(timeFormatter), transaction.getDescription(),transaction.getVendor(), transaction.getIdOfTransaction(), transaction.getTransactionAmount());
         }
     }
 
@@ -197,34 +192,29 @@ public class Main {
             switch (reportUserChoice){
                 case 1:
                     List<Transaction> sortMonthToDate = monthToDate(transactionFileName);
-                    sortMonthToDate.sort(Comparator.comparing(Transaction::getDate).reversed());
-                    addList(testFileName,sortMonthToDate);
-                    readTestFile(testFileName);
+                    sortMonthToDate.sort(Comparator.comparing(Transaction::getDateTime).reversed());
+                    displayTransaction(sortMonthToDate);
 
                     break;
                 case 2:
                     List<Transaction> sortPreviousMonth = previousMonth(transactionFileName);
                     sortPreviousMonth.sort(Comparator.comparing(Transaction::getDate).reversed());
-                    addList(testFileName,sortPreviousMonth);
-                    readTestFile(testFileName);
+                    displayTransaction(sortPreviousMonth);
                     break;
                 case 3:
                     List<Transaction> sortYearToDate = yearToDate(transactionFileName);
                     sortYearToDate.sort(Comparator.comparing(Transaction::getDate).reversed());
-                    addList(testFileName,sortYearToDate);
-                    readTestFile(testFileName);
+                    displayTransaction(sortYearToDate);
                     break;
                 case 4:
                     List<Transaction> sortPreviousYear = previousYear(transactionFileName);
                     sortPreviousYear.sort(Comparator.comparing(Transaction::getDate).reversed());
-                    addList(testFileName,sortPreviousYear);
-                    readTestFile(testFileName);
+                    displayTransaction(sortPreviousYear);
                     break;
                 case 5:
                     List<Transaction> sortSerchByVendor = searchByVendor(transactionFileName);
                     sortSerchByVendor.sort(Comparator.comparing(Transaction::getVendor));
-                    addList(testFileName,sortSerchByVendor);
-                    readTestFile(testFileName);
+                    displayTransaction(sortSerchByVendor);
                     break;
                 case 6:
                     runningReport = false;
@@ -232,27 +222,6 @@ public class Main {
                 default:
                     System.out.println("Invalid input, please select from 1 - 6 option.");
             }
-        }
-    }
-
-    public static void readTestFile (String fileName){
-        try(BufferedReader bf = new BufferedReader(new FileReader(fileName))) {
-            String line;
-            while ((line = bf.readLine()) != null){
-                System.out.println(line);
-            }
-        }catch (IOException e){
-            System.out.println(e.getMessage());
-        }
-    }
-
-    public static void addList (String fileName, List<Transaction> nameOfList){
-        try (FileWriter fw = new FileWriter(fileName)){
-            for(Transaction transaction: nameOfList){
-                fw.write(transaction.toFileString() + "\n");
-            }
-        }catch (IOException e){
-            System.out.println(e.getMessage());
         }
     }
 
@@ -286,33 +255,26 @@ public class Main {
     }
 
     public static List<Transaction> previousYear(String fileName){
+        List<Transaction> transactions = getTransactionsFromFile(fileName);
+
         List<Transaction> previousYear = new ArrayList<>();
-        LocalDate todayDate = LocalDate.now();
-        LocalDate startOfPreviousYear = todayDate.minusYears(1).withDayOfYear(1);
-        LocalDate endOfPreviousYear = startOfPreviousYear.withDayOfYear(startOfPreviousYear.lengthOfYear());
 
-        try(BufferedReader br = new BufferedReader(new FileReader(fileName))) {
-            String line;
-            while ((line = br.readLine()) != null){
-                String [] arrTransaction = line.split("\\|");
+        LocalDateTime todayDate = LocalDateTime.now();
+        LocalDateTime startOfPreviousYear = todayDate.minusYears(1).withDayOfYear(1);
 
-                LocalDate date = LocalDate.parse(arrTransaction[0],dateFormatter);
-                LocalTime time = LocalTime.parse(arrTransaction[1],timeFormatter);
-                String description = arrTransaction[2];
-                String vendor = arrTransaction[3];
-                String id = arrTransaction[4];
-                double amount = Double.parseDouble(arrTransaction[5]);
+        LocalDateTime endOfPreviousYear = startOfPreviousYear.withDayOfYear(startOfPreviousYear.getMonth().length(LocalDate.of(startOfPreviousYear.getYear(),12,LocalDate.now().lengthOfMonth()).isLeapYear()));
 
-                if ((date.isEqual(startOfPreviousYear) || date.isAfter(startOfPreviousYear)) && (date.isEqual(endOfPreviousYear) || date.isBefore(endOfPreviousYear))){
 
-                    Transaction transaction = new Transaction(date,time,description,vendor,id,amount);
+            for (Transaction transaction: transactions){
+
+                LocalDateTime dt = transaction.getDateTime();
+
+                if ((dt.isEqual(startOfPreviousYear) || dt.isAfter(startOfPreviousYear)) && (dt.isEqual(endOfPreviousYear) || dt.isBefore(endOfPreviousYear))){
 
                     previousYear.add(transaction);
                 }
             }
-        }catch (IOException e){
-            System.out.println(e.getMessage());
-        }
+
         return previousYear;
     }
 
@@ -348,68 +310,49 @@ public class Main {
     }
 
     public static List<Transaction> previousMonth(String fileName){
+        List<Transaction> transactions = getTransactionsFromFile(transactionFileName);
         List<Transaction> previousMonth = new ArrayList<>();
 
-        LocalDate dateToday = LocalDate.now();
+        LocalDateTime dateToday = LocalDateTime.now();
 
-        LocalDate startOfPreviousMonth = dateToday.minusMonths(1).withDayOfMonth(1);
+        LocalDateTime startOfPreviousMonth = dateToday.minusMonths(1).withDayOfMonth(1);
 
-        LocalDate endOfPreviousMonth = startOfPreviousMonth.withDayOfMonth(startOfPreviousMonth.lengthOfMonth());
+        LocalDateTime endOfPreviousMonth = startOfPreviousMonth.withDayOfMonth(startOfPreviousMonth.getMonth().length(LocalDate.of(startOfPreviousMonth.getYear(),1,1).isLeapYear()));
 
-        try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
-            String line;
-            while ((line = br.readLine()) != null){
-                String [] arrTransaction = line.split("\\|");
 
-                LocalDate date = LocalDate.parse(arrTransaction[0],dateFormatter);
-                LocalTime time = LocalTime.parse(arrTransaction[1],timeFormatter);
-                String description = arrTransaction[2];
-                String vendor = arrTransaction[3];
-                String id = arrTransaction[4];
-                double amount = Double.parseDouble(arrTransaction[5]);
+            for (Transaction transaction: transactions){
+                LocalDateTime dt = transaction.getDateTime();
 
-                if((date.isEqual(startOfPreviousMonth) || date.isAfter(startOfPreviousMonth)) && (date.isEqual(endOfPreviousMonth) || date.isBefore(endOfPreviousMonth))){
 
-                    Transaction transaction = new Transaction(date,time,description,vendor,id,amount);
+
+                if((dt.isEqual(startOfPreviousMonth) || dt.isAfter(startOfPreviousMonth)) && (dt.isEqual(endOfPreviousMonth) || dt.isBefore(endOfPreviousMonth))){
+
+
 
                     previousMonth.add(transaction);
                 }
             }
-        }catch (IOException e){
-            System.out.println(e.getMessage());
-        }
+
+
         return  previousMonth;
     }
 
     public static List<Transaction> monthToDate(String fileName){
+        List<Transaction> transactions = getTransactionsFromFile(transactionFileName);
         List<Transaction> monthToDateTransactions = new ArrayList<>();
 
-        LocalDate dateToday = LocalDate.now();
-        LocalDate startOfMonth = dateToday.withDayOfMonth(1);
+        LocalDateTime dateToday = LocalDateTime.now();
 
-        try (BufferedReader br = new BufferedReader(new FileReader(fileName))){
-            String line;
-            while ((line = br.readLine()) != null){
+        LocalDateTime startOfMonth = dateToday.withDayOfMonth(1);
 
-                String[] arrTransaction = line.split("\\|");
+            for (Transaction transaction: transactions){
 
-                LocalDate date = LocalDate.parse(arrTransaction[0],dateFormatter);
-                LocalTime time = LocalTime.parse(arrTransaction[1],timeFormatter);
-                String description = arrTransaction[2];
-                String vendor = arrTransaction[3];
-                String id = arrTransaction[4];
-                double amount = Double.parseDouble(arrTransaction[5]);
+                LocalDateTime dt = transaction.getDateTime();
 
-                if((date.isEqual(startOfMonth) || date.isAfter(startOfMonth)) && ((date.isEqual(dateToday)) || (date.isBefore(dateToday)))){
-
-                    Transaction transaction = new Transaction(date,time,description,vendor,id,amount);
-
+                if((dt.isEqual(startOfMonth) || dt.isAfter(startOfMonth)) && ((dt.isEqual(dateToday)) || (dt.isBefore(dateToday)))){
                     monthToDateTransactions.add(transaction);
                 }
             }
-        }catch (IOException e){
-            System.out.println(e.getMessage());
-        }
         return monthToDateTransactions;
     }
 }
