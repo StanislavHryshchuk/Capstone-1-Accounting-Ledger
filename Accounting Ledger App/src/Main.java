@@ -13,7 +13,7 @@ public class Main {
     static DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm:ss a");
     static DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     static String transactionFileName = "src/transaction.csv";
-    static String testFileName = "src/test.csv";
+
 
 
     public static void main(String[] args) {
@@ -156,10 +156,14 @@ public class Main {
 
     public static List<Transaction> getTransactionsFromFile(String fileName){
         List<Transaction> transactions = new ArrayList<>();
+
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))){
             String line;
+
             while ((line = br.readLine()) != null){
+
                 String[] arrTransaction = line.split("\\|");
+
                 Transaction transaction = new Transaction(LocalDate.parse(arrTransaction[0],dateFormatter),LocalTime.parse(arrTransaction[1],timeFormatter),arrTransaction[2],arrTransaction[3],arrTransaction[4],Double.parseDouble(arrTransaction[5]));
 
                 transactions.add(transaction);
@@ -171,7 +175,9 @@ public class Main {
     }
 
     public static void displayTransaction(List<Transaction> transactions){
+
         for (Transaction transaction : transactions) {
+
             System.out.printf("%s | %s | %s | %s | %s | %.2f%n", transaction.getDate().format(dateFormatter), transaction.getTime().format(timeFormatter), transaction.getDescription(),transaction.getVendor(), transaction.getIdOfTransaction(), transaction.getTransactionAmount());
         }
     }
@@ -225,7 +231,91 @@ public class Main {
         }
     }
 
+    public static List<Transaction> monthToDate(String fileName){
+        List<Transaction> transactions = getTransactionsFromFile(transactionFileName);
+        List<Transaction> monthToDateTransactions = new ArrayList<>();
+
+        LocalDateTime dateToday = LocalDateTime.now();
+
+        LocalDateTime startOfMonth = dateToday.withDayOfMonth(1);
+
+        for (Transaction transaction: transactions){
+
+            LocalDateTime dt = transaction.getDateTime();
+
+            if((dt.isEqual(startOfMonth) || dt.isAfter(startOfMonth)) && ((dt.isEqual(dateToday)) || (dt.isBefore(dateToday)))){
+                monthToDateTransactions.add(transaction);
+            }
+        }
+        return monthToDateTransactions;
+    }
+
+    public static List<Transaction> previousMonth(String fileName){
+
+        List<Transaction> transactions = getTransactionsFromFile(transactionFileName);
+        List<Transaction> previousMonth = new ArrayList<>();
+
+        LocalDateTime dateToday = LocalDateTime.now();
+
+        LocalDateTime startOfPreviousMonth = dateToday.minusMonths(1).withDayOfMonth(1);
+
+        LocalDateTime endOfPreviousMonth = startOfPreviousMonth.withDayOfMonth(startOfPreviousMonth.getMonth().length(LocalDate.of(startOfPreviousMonth.getYear(),1,1).isLeapYear()));
+
+
+        for (Transaction transaction: transactions){
+            LocalDateTime dt = transaction.getDateTime();
+
+            if((dt.isEqual(startOfPreviousMonth) || dt.isAfter(startOfPreviousMonth)) && (dt.isEqual(endOfPreviousMonth) || dt.isBefore(endOfPreviousMonth))){
+
+                previousMonth.add(transaction);
+            }
+        }
+        return  previousMonth;
+    }
+
+    public static List<Transaction> yearToDate(String fileName){
+
+        List<Transaction> transactions = getTransactionsFromFile(fileName);
+        List<Transaction> yearToDate = new ArrayList<>();
+
+        LocalDateTime todayDate = LocalDateTime.now();
+        LocalDateTime startOfTheYear = todayDate.withDayOfYear(1);
+
+        for (Transaction transaction: transactions){
+            LocalDateTime dt = transaction.getDateTime();
+
+            if((dt.isEqual(startOfTheYear) || dt.isAfter(startOfTheYear)) && (dt.isEqual(todayDate) || dt.isBefore(todayDate))){
+
+                yearToDate.add(transaction);
+            }
+        }
+        return yearToDate;
+    }
+
+    public static List<Transaction> previousYear(String fileName){
+        List<Transaction> transactions = getTransactionsFromFile(fileName);
+
+        List<Transaction> previousYear = new ArrayList<>();
+
+        LocalDateTime todayDate = LocalDateTime.now();
+        LocalDateTime startOfPreviousYear = todayDate.minusYears(1).withDayOfYear(1);
+
+        LocalDateTime endOfPreviousYear = LocalDateTime.of(startOfPreviousYear.getYear(),12,31,23,59,59);
+
+        for (Transaction transaction: transactions){
+
+            LocalDateTime dt = transaction.getDateTime();
+
+            if ((dt.isEqual(startOfPreviousYear) || dt.isAfter(startOfPreviousYear)) && (dt.isEqual(endOfPreviousYear) || dt.isBefore(endOfPreviousYear))){
+
+                previousYear.add(transaction);
+            }
+        }
+        return previousYear;
+    }
+
     public static List<Transaction> searchByVendor (String fileName){
+
         List<Transaction> searchByVendor = new ArrayList<>();
         System.out.println("Please enter the Vendor: ");
         String userEnterVendor = scanner.nextLine();
@@ -254,87 +344,4 @@ public class Main {
         return searchByVendor;
     }
 
-    public static List<Transaction> previousYear(String fileName){
-        List<Transaction> transactions = getTransactionsFromFile(fileName);
-
-        List<Transaction> previousYear = new ArrayList<>();
-
-        LocalDateTime todayDate = LocalDateTime.now();
-        LocalDateTime startOfPreviousYear = todayDate.minusYears(1).withDayOfYear(1);
-
-        LocalDateTime endOfPreviousYear = LocalDateTime.of(startOfPreviousYear.getYear(),12,31,23,59,59);
-
-            for (Transaction transaction: transactions){
-
-                LocalDateTime dt = transaction.getDateTime();
-
-                if ((dt.isEqual(startOfPreviousYear) || dt.isAfter(startOfPreviousYear)) && (dt.isEqual(endOfPreviousYear) || dt.isBefore(endOfPreviousYear))){
-
-                    previousYear.add(transaction);
-                }
-            }
-
-        return previousYear;
-    }
-
-    public static List<Transaction> yearToDate(String fileName){
-        List<Transaction> transactions = getTransactionsFromFile(fileName);
-        List<Transaction> yearToDate = new ArrayList<>();
-
-        LocalDateTime todayDate = LocalDateTime.now();
-        LocalDateTime startOfTheYear = todayDate.withDayOfYear(1);
-
-            for (Transaction transaction: transactions){
-                LocalDateTime dt = transaction.getDateTime();
-
-                if((dt.isEqual(startOfTheYear) || dt.isAfter(startOfTheYear)) && (dt.isEqual(todayDate) || dt.isBefore(todayDate))){
-
-                    yearToDate.add(transaction);
-                }
-            }
-        return yearToDate;
-    }
-
-    public static List<Transaction> previousMonth(String fileName){
-        List<Transaction> transactions = getTransactionsFromFile(transactionFileName);
-        List<Transaction> previousMonth = new ArrayList<>();
-
-        LocalDateTime dateToday = LocalDateTime.now();
-
-        LocalDateTime startOfPreviousMonth = dateToday.minusMonths(1).withDayOfMonth(1);
-
-        LocalDateTime endOfPreviousMonth = startOfPreviousMonth.withDayOfMonth(startOfPreviousMonth.getMonth().length(LocalDate.of(startOfPreviousMonth.getYear(),1,1).isLeapYear()));
-
-
-            for (Transaction transaction: transactions){
-                LocalDateTime dt = transaction.getDateTime();
-
-                if((dt.isEqual(startOfPreviousMonth) || dt.isAfter(startOfPreviousMonth)) && (dt.isEqual(endOfPreviousMonth) || dt.isBefore(endOfPreviousMonth))){
-
-                    previousMonth.add(transaction);
-                }
-            }
-
-
-        return  previousMonth;
-    }
-
-    public static List<Transaction> monthToDate(String fileName){
-        List<Transaction> transactions = getTransactionsFromFile(transactionFileName);
-        List<Transaction> monthToDateTransactions = new ArrayList<>();
-
-        LocalDateTime dateToday = LocalDateTime.now();
-
-        LocalDateTime startOfMonth = dateToday.withDayOfMonth(1);
-
-            for (Transaction transaction: transactions){
-
-                LocalDateTime dt = transaction.getDateTime();
-
-                if((dt.isEqual(startOfMonth) || dt.isAfter(startOfMonth)) && ((dt.isEqual(dateToday)) || (dt.isBefore(dateToday)))){
-                    monthToDateTransactions.add(transaction);
-                }
-            }
-        return monthToDateTransactions;
-    }
 }
