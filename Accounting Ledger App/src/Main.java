@@ -117,17 +117,17 @@ public class Main {
             switch (userLedgerChoice){
                 case 1 :
                     List<Transaction> allTransactions = getTransactionsFromFile(transactionFileName);
-                    allTransactions.sort(Comparator.comparing(Transaction::getDate).reversed());
+                    allTransactions.sort(Comparator.comparing(Transaction::getDateTime).reversed());
                     displayTransaction(allTransactions);
                     break;
                 case 2 :
                     List<Transaction> depositTransactions = findTransactionsById("D");
-                    depositTransactions.sort(Comparator.comparing(Transaction::getDate).reversed());
+                    depositTransactions.sort(Comparator.comparing(Transaction::getDateTime).reversed());
                     displayTransaction(depositTransactions);
                     break;
                 case 3:
                     List<Transaction> paymentTransactions = findTransactionsById("P");
-                    paymentTransactions.sort(Comparator.comparing(Transaction::getDate).reversed());
+                    paymentTransactions.sort(Comparator.comparing(Transaction::getDateTime).reversed());
                     displayTransaction(paymentTransactions);
                     break;
                 case 4:
@@ -198,17 +198,17 @@ public class Main {
                     break;
                 case 2:
                     List<Transaction> sortPreviousMonth = previousMonth(transactionFileName);
-                    sortPreviousMonth.sort(Comparator.comparing(Transaction::getDate).reversed());
+                    sortPreviousMonth.sort(Comparator.comparing(Transaction::getDateTime).reversed());
                     displayTransaction(sortPreviousMonth);
                     break;
                 case 3:
                     List<Transaction> sortYearToDate = yearToDate(transactionFileName);
-                    sortYearToDate.sort(Comparator.comparing(Transaction::getDate).reversed());
+                    sortYearToDate.sort(Comparator.comparing(Transaction::getDateTime).reversed());
                     displayTransaction(sortYearToDate);
                     break;
                 case 4:
                     List<Transaction> sortPreviousYear = previousYear(transactionFileName);
-                    sortPreviousYear.sort(Comparator.comparing(Transaction::getDate).reversed());
+                    sortPreviousYear.sort(Comparator.comparing(Transaction::getDateTime).reversed());
                     displayTransaction(sortPreviousYear);
                     break;
                 case 5:
@@ -262,8 +262,7 @@ public class Main {
         LocalDateTime todayDate = LocalDateTime.now();
         LocalDateTime startOfPreviousYear = todayDate.minusYears(1).withDayOfYear(1);
 
-        LocalDateTime endOfPreviousYear = startOfPreviousYear.withDayOfYear(startOfPreviousYear.getMonth().length(LocalDate.of(startOfPreviousYear.getYear(),12,LocalDate.now().lengthOfMonth()).isLeapYear()));
-
+        LocalDateTime endOfPreviousYear = LocalDateTime.of(startOfPreviousYear.getYear(),12,31,23,59,59);
 
             for (Transaction transaction: transactions){
 
@@ -279,33 +278,20 @@ public class Main {
     }
 
     public static List<Transaction> yearToDate(String fileName){
+        List<Transaction> transactions = getTransactionsFromFile(fileName);
         List<Transaction> yearToDate = new ArrayList<>();
-        LocalDate todayDate = LocalDate.now();
-        LocalDate startOfTheYear = todayDate.withDayOfYear(1);
 
+        LocalDateTime todayDate = LocalDateTime.now();
+        LocalDateTime startOfTheYear = todayDate.withDayOfYear(1);
 
-        try(BufferedReader br = new BufferedReader(new FileReader(fileName))) {
-            String line;
-            while ((line = br.readLine()) != null){
-                String [] arrTransaction = line.split("\\|");
+            for (Transaction transaction: transactions){
+                LocalDateTime dt = transaction.getDateTime();
 
-                LocalDate date = LocalDate.parse(arrTransaction[0],dateFormatter);
-                LocalTime time = LocalTime.parse(arrTransaction[1],timeFormatter);
-                String description = arrTransaction[2];
-                String vendor = arrTransaction[3];
-                String id = arrTransaction[4];
-                double amount = Double.parseDouble(arrTransaction[5]);
-
-                if((date.isEqual(startOfTheYear) || date.isAfter(startOfTheYear)) && (date.isEqual(todayDate) || date.isBefore(todayDate))){
-                    Transaction transaction = new Transaction(date,time,description,vendor,id,amount);
+                if((dt.isEqual(startOfTheYear) || dt.isAfter(startOfTheYear)) && (dt.isEqual(todayDate) || dt.isBefore(todayDate))){
 
                     yearToDate.add(transaction);
                 }
-
             }
-        }catch (IOException e){
-            System.out.println(e.getMessage());
-        }
         return yearToDate;
     }
 
@@ -323,11 +309,7 @@ public class Main {
             for (Transaction transaction: transactions){
                 LocalDateTime dt = transaction.getDateTime();
 
-
-
                 if((dt.isEqual(startOfPreviousMonth) || dt.isAfter(startOfPreviousMonth)) && (dt.isEqual(endOfPreviousMonth) || dt.isBefore(endOfPreviousMonth))){
-
-
 
                     previousMonth.add(transaction);
                 }
