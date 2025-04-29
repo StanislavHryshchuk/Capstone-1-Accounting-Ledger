@@ -68,8 +68,12 @@ public class Main {
         LocalTime lt = LocalTime.now();
 
         System.out.println("What amount you would like to deposit?");
-        double depositAmount = scanner.nextDouble();
-        scanner.nextLine();
+        double depositAmount = 0;
+        try {
+            depositAmount = Double.parseDouble(scanner.nextLine()) * -1;
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid amount. Defaulting to 0.");
+        }
 
         System.out.println("Please provide a description of deposit: ");
         String depositDescription = scanner.nextLine();
@@ -88,8 +92,12 @@ public class Main {
         LocalTime lt = LocalTime.now();
 
         System.out.println("What is the payment amount?");
-        double paymentAmount = scanner.nextDouble() * -1;
-        scanner.nextLine();
+        double paymentAmount = 0;
+        try {
+            paymentAmount = Double.parseDouble(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid amount. Defaulting to 0.");
+        }
 
         System.out.println("Please provide a description of payment.");
         String paymentDescription = scanner.nextLine();
@@ -186,7 +194,7 @@ public class Main {
         boolean runningReport = true;
         while (runningReport){
             System.out.println("\n---------------------------------- Report Menu ----------------------------------");
-            System.out.println("\nPlease select option from 1 - 6.");
+            System.out.println("\nPlease select option from 1 - 7.");
             System.out.println("""
                     1. Month to Date.
                     2. Previous Month.
@@ -238,7 +246,7 @@ public class Main {
     }
 
     public static List<Transaction> monthToDate(String fileName){
-        List<Transaction> transactions = getTransactionsFromFile(transactionFileName);
+        List<Transaction> transactions = getTransactionsFromFile(fileName);
         List<Transaction> monthToDateTransactions = new ArrayList<>();
 
         LocalDateTime dateToday = LocalDateTime.now();
@@ -258,7 +266,7 @@ public class Main {
 
     public static List<Transaction> previousMonth(String fileName){
 
-        List<Transaction> transactions = getTransactionsFromFile(transactionFileName);
+        List<Transaction> transactions = getTransactionsFromFile(fileName);
         List<Transaction> previousMonth = new ArrayList<>();
 
         LocalDateTime dateToday = LocalDateTime.now();
@@ -329,7 +337,7 @@ public class Main {
         String userEnterVendor = scanner.nextLine();
 
         for (Transaction transaction: transactions){
-            if(transaction.getVendor().equals(userEnterVendor)){
+            if(transaction.getVendor().equalsIgnoreCase(userEnterVendor)){
 
                 searchByVendor.add(transaction);
             }
@@ -345,39 +353,39 @@ public class Main {
 
         System.out.println("Please enter the Start Date in following format: yyyy-MM-dd");
         String userDate = scanner.nextLine().trim();
-        if (!userDate.isEmpty()) {
+        if (!userDate.isBlank()) {
             LocalDate userStartDate = LocalDate.parse(userDate);
             transactions = filterByStartDate(transactions,userStartDate);
         }
 
         System.out.println("Please enter the End Date in following format: yyyy-MM-dd");
         String userDate2 = scanner.nextLine().trim();
-        if (!userDate2.isEmpty()){
+        if (!userDate2.isBlank()){
             LocalDate userEndDate = LocalDate.parse(userDate2);
             transactions = filterByEndDate(transactions,userEndDate);
         }
 
         System.out.println("Please enter the Description:");
         String userDescription = scanner.nextLine().trim();
-        if(!userDescription.isEmpty()){
+        if(!userDescription.isBlank()){
             transactions = filterByDescription(transactions,userDescription);
         }
 
         System.out.println("Please enter the Vendors name:");
         String userVendor = scanner.nextLine().trim();
-        if (!userVendor.isEmpty()){
+        if (!userVendor.isBlank()){
             transactions = filterByVendor(transactions,userVendor);
         }
 
         System.out.println("Please enter the Id of Transaction: (D | P)");
         String userIdOfTransaction = scanner.nextLine().trim();
-        if (!userIdOfTransaction.isEmpty()){
+        if (!userIdOfTransaction.isBlank()){
             transactions = filterByID(transactions,userIdOfTransaction);
         }
 
         System.out.println("Please enter the Amount of Transaction:");
         String userAmountEntry = scanner.nextLine();
-        if(!userAmountEntry.isEmpty()) {
+        if(!userAmountEntry.isBlank()) {
             double userAmount = Double.parseDouble(userAmountEntry);
             transactions = filterByAmount(transactions, userAmount);
         }
@@ -389,7 +397,7 @@ public class Main {
         List<Transaction> matchingTransactions = new ArrayList<>();
 
         for(Transaction transaction:transactions){
-            if (transaction.getDate().isAfter(userStartDate)){
+            if (transaction.getDate().isAfter(userStartDate) || transaction.getDate().isEqual(userStartDate)){
                 matchingTransactions.add(transaction);
             }
         }
@@ -400,7 +408,7 @@ public class Main {
         List<Transaction> matchingTransactions = new ArrayList<>();
 
         for(Transaction transaction:transactions){
-            if(transaction.getDate().isBefore(userEndDate)){
+            if(transaction.getDate().isBefore(userEndDate) || transaction.getDate().isEqual(userEndDate)){
                 matchingTransactions.add(transaction);
             }
         }

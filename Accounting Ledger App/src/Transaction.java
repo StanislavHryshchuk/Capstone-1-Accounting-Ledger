@@ -3,14 +3,13 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 public class Transaction {
-    // Combine
+    // Combine Date and Time in 1 variable
     private LocalDateTime dateTime;
     private LocalDate date;
     private LocalTime time;
     private String description;
     private String idOfTransaction;
     private double transactionAmount;
-    private String paymentId;
     private String vendor;
 
 
@@ -19,13 +18,6 @@ public class Transaction {
     public Transaction (LocalDate date, LocalTime time, String description, String vendor, String idOfTransaction, double transactionAmount){
         this.dateTime = LocalDateTime.of(date,time);
         this.date = date;
-        this.time = time;
-        this.description = description;
-        this.transactionAmount = transactionAmount;
-        this.idOfTransaction = idOfTransaction;
-        this.vendor = vendor;
-    }
-    public Transaction (LocalTime time,String description,String vendor ,String idOfTransaction,double transactionAmount){
         this.time = time;
         this.description = description;
         this.transactionAmount = transactionAmount;
@@ -85,13 +77,6 @@ public class Transaction {
         this.transactionAmount = transactionAmount;
     }
 
-    public String getPaymentId() {
-        return paymentId;
-    }
-
-    public void setPaymentId(String paymentId) {
-        this.paymentId = paymentId;
-    }
 
     public LocalDateTime getDateTime() {
         return dateTime;
