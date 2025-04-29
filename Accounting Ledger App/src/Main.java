@@ -11,6 +11,7 @@ import java.util.*;
 public class Main {
     static Scanner scanner = new Scanner(System.in);
     static DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm:ss a");
+    static DateTimeFormatter dateTimevar = DateTimeFormatter.ofPattern("yyyy-MM-dd|hh:mm:ss a");
     static DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     static String transactionFileName = "src/transaction.csv";
 
