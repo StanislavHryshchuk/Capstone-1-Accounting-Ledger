@@ -338,20 +338,19 @@ public class Main {
     }
 
     public static List<Transaction> customSearch (String fileName) {
-        List<Transaction> transactions = getTransactionsFromFile(fileName);
 
+        List<Transaction> transactions = getTransactionsFromFile(fileName);
 
         System.out.println("Please enter the information for the following fields: Start Date,End Date, Description,Vendor,Id of Transaction,Amount");
 
         System.out.println("Please enter the Start Date in following format: yyyy-MM-dd");
-
         String userDate = scanner.nextLine().trim();
         if (!userDate.isEmpty()) {
             LocalDate userStartDate = LocalDate.parse(userDate);
             transactions = filterByStartDate(transactions,userStartDate);
         }
-        System.out.println("Please enter the End Date in following format: yyyy-MM-dd");
 
+        System.out.println("Please enter the End Date in following format: yyyy-MM-dd");
         String userDate2 = scanner.nextLine().trim();
         if (!userDate2.isEmpty()){
             LocalDate userEndDate = LocalDate.parse(userDate2);
@@ -359,52 +358,33 @@ public class Main {
         }
 
         System.out.println("Please enter the Description:");
-
         String userDescription = scanner.nextLine().trim();
         if(!userDescription.isEmpty()){
             transactions = filterByDescription(transactions,userDescription);
         }
 
         System.out.println("Please enter the Vendors name:");
-
         String userVendor = scanner.nextLine().trim();
         if (!userVendor.isEmpty()){
             transactions = filterByVendor(transactions,userVendor);
         }
 
         System.out.println("Please enter the Id of Transaction: (D | P)");
-        String userIdOfTransaction = null;
-        userIdOfTransaction = scanner.nextLine().trim().toUpperCase();
+        String userIdOfTransaction = scanner.nextLine().trim();
+        if (!userIdOfTransaction.isEmpty()){
+            transactions = filterByID(transactions,userIdOfTransaction);
+        }
 
         System.out.println("Please enter the Amount of Transaction:");
-        Double userAmount = null;
         String userAmountEntry = scanner.nextLine();
-        if(!userAmountEntry.isEmpty()) userAmount = Double.parseDouble(userAmountEntry);
-
-        for (Transaction transaction: transactions){
-
-            LocalDateTime dt = transaction.getDateTime();
-            boolean matches = true;
-
-
-            if (!userDescription.isEmpty() && !transaction.getDescription().equalsIgnoreCase(userDescription)){
-                matches = false;
-            }
-            if (!userVendor.isEmpty() && !transaction.getVendor().equalsIgnoreCase(userVendor)){
-                matches = false;
-            }
-            if (!userIdOfTransaction.isEmpty() && !transaction.getIdOfTransaction().equalsIgnoreCase(userIdOfTransaction)){
-                matches = false;
-            }
-            if (!userAmountEntry.isEmpty() && userAmount != null && transaction.getTransactionAmount() != userAmount){
-                matches = false;
-            }
-            if(matches){
-                //matchingTransactions.add(transaction);
-            }
+        if(!userAmountEntry.isEmpty()) {
+            double userAmount = Double.parseDouble(userAmountEntry);
+            transactions = filterByAmount(transactions, userAmount);
         }
+
         return transactions;
     }
+
     public static List<Transaction> filterByStartDate(List<Transaction> transactions, LocalDate userStartDate){
         List<Transaction> matchingTransactions = new ArrayList<>();
 
@@ -415,12 +395,13 @@ public class Main {
         }
         return matchingTransactions;
     }
+
     public static List<Transaction> filterByEndDate(List<Transaction> transactions, LocalDate userEndDate){
         List<Transaction> matchingTransactions = new ArrayList<>();
 
         for(Transaction transaction:transactions){
             if(transaction.getDate().isBefore(userEndDate)){
-                matchingTransactions.add(transaction)
+                matchingTransactions.add(transaction);
             }
         }
         return matchingTransactions;
@@ -431,6 +412,39 @@ public class Main {
 
         for(Transaction transaction:transactions){
             if(transaction.getDescription().equalsIgnoreCase(userDescription)){
+                matchingTransactions.add(transaction);
+            }
+        }
+        return matchingTransactions;
+    }
+
+    public static List<Transaction> filterByVendor(List<Transaction> transactions, String userVendor){
+        List<Transaction> matchingTransactions = new ArrayList<>();
+
+        for(Transaction transaction:transactions){
+            if(transaction.getVendor().equalsIgnoreCase(userVendor)){
+                matchingTransactions.add(transaction);
+            }
+        }
+        return matchingTransactions;
+    }
+
+    public static List<Transaction> filterByID(List<Transaction> transactions, String userIdOfTransaction){
+        List<Transaction> matchingTransactions = new ArrayList<>();
+
+        for(Transaction transaction:transactions){
+            if(transaction.getIdOfTransaction().equalsIgnoreCase(userIdOfTransaction)){
+                matchingTransactions.add(transaction);
+            }
+        }
+        return matchingTransactions;
+    }
+
+    public static List<Transaction> filterByAmount(List<Transaction> transactions, double userAmount){
+        List<Transaction> matchingTransactions = new ArrayList<>();
+
+        for(Transaction transaction:transactions){
+            if(transaction.getTransactionAmount() == userAmount ){
                 matchingTransactions.add(transaction);
             }
         }
