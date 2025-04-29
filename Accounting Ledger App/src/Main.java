@@ -345,27 +345,32 @@ public class Main {
 
         System.out.println("Please enter the Start Date in following format: yyyy-MM-dd");
 
-
         String userDate = scanner.nextLine().trim();
         if (!userDate.isEmpty()) {
             LocalDate userStartDate = LocalDate.parse(userDate);
             transactions = filterByStartDate(transactions,userStartDate);
         }
         System.out.println("Please enter the End Date in following format: yyyy-MM-dd");
-        LocalDate userEndDate = null;
-        String userDate2 = scanner.nextLine().trim();
 
+        String userDate2 = scanner.nextLine().trim();
         if (!userDate2.isEmpty()){
-            userEndDate = LocalDate.parse(userDate2);
+            LocalDate userEndDate = LocalDate.parse(userDate2);
+            transactions = filterByEndDate(transactions,userEndDate);
         }
 
         System.out.println("Please enter the Description:");
-        String userDescription = null;
-        userDescription = scanner.nextLine().trim();
+
+        String userDescription = scanner.nextLine().trim();
+        if(!userDescription.isEmpty()){
+            transactions = filterByDescription(transactions,userDescription);
+        }
 
         System.out.println("Please enter the Vendors name:");
-        String userVendor = null;
-        userVendor = scanner.nextLine().trim();
+
+        String userVendor = scanner.nextLine().trim();
+        if (!userVendor.isEmpty()){
+            transactions = filterByVendor(transactions,userVendor);
+        }
 
         System.out.println("Please enter the Id of Transaction: (D | P)");
         String userIdOfTransaction = null;
@@ -376,16 +381,12 @@ public class Main {
         String userAmountEntry = scanner.nextLine();
         if(!userAmountEntry.isEmpty()) userAmount = Double.parseDouble(userAmountEntry);
 
-
-
         for (Transaction transaction: transactions){
 
             LocalDateTime dt = transaction.getDateTime();
             boolean matches = true;
 
-            if (userEndDate != null && transaction.getDate().isAfter(userEndDate)){
-                matches = false;
-            }
+
             if (!userDescription.isEmpty() && !transaction.getDescription().equalsIgnoreCase(userDescription)){
                 matches = false;
             }
@@ -409,6 +410,27 @@ public class Main {
 
         for(Transaction transaction:transactions){
             if (transaction.getDate().isAfter(userStartDate)){
+                matchingTransactions.add(transaction);
+            }
+        }
+        return matchingTransactions;
+    }
+    public static List<Transaction> filterByEndDate(List<Transaction> transactions, LocalDate userEndDate){
+        List<Transaction> matchingTransactions = new ArrayList<>();
+
+        for(Transaction transaction:transactions){
+            if(transaction.getDate().isBefore(userEndDate)){
+                matchingTransactions.add(transaction)
+            }
+        }
+        return matchingTransactions;
+    }
+
+    public static List<Transaction> filterByDescription(List<Transaction> transactions, String userDescription){
+        List<Transaction> matchingTransactions = new ArrayList<>();
+
+        for(Transaction transaction:transactions){
+            if(transaction.getDescription().equalsIgnoreCase(userDescription)){
                 matchingTransactions.add(transaction);
             }
         }
