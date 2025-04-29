@@ -193,7 +193,8 @@ public class Main {
                     3. Year to Date.
                     4. Previous Year
                     5. Search by Vendor
-                    6. Back""");
+                    6. Custom Search
+                    7. Back""");
             int reportUserChoice = Integer.parseInt(scanner.nextLine());
             switch (reportUserChoice){
                 case 1:
@@ -218,11 +219,16 @@ public class Main {
                     displayTransaction(sortPreviousYear);
                     break;
                 case 5:
-                    List<Transaction> sortSerchByVendor = searchByVendor(transactionFileName);
-                    sortSerchByVendor.sort(Comparator.comparing(Transaction::getVendor));
-                    displayTransaction(sortSerchByVendor);
+                    List<Transaction> sortSearchByVendor = searchByVendor(transactionFileName);
+                    sortSearchByVendor.sort(Comparator.comparing(Transaction::getDateTime).reversed());
+                    displayTransaction(sortSearchByVendor);
                     break;
                 case 6:
+                    List<Transaction> customSearch = customSearch(transactionFileName);
+                    customSearch.sort(Comparator.comparing(Transaction::getDateTime).reversed());
+                    displayTransaction(customSearch);
+                    break;
+                case 7:
                     runningReport = false;
                     break;
                 default:
@@ -329,6 +335,84 @@ public class Main {
             }
         }
         return searchByVendor;
+    }
+
+    public static List<Transaction> customSearch (String fileName) {
+        List<Transaction> transactions = getTransactionsFromFile(fileName);
+
+
+        System.out.println("Please enter the information for the following fields: Start Date,End Date, Description,Vendor,Id of Transaction,Amount");
+
+        System.out.println("Please enter the Start Date in following format: yyyy-MM-dd");
+
+
+        String userDate = scanner.nextLine().trim();
+        if (!userDate.isEmpty()) {
+            LocalDate userStartDate = LocalDate.parse(userDate);
+            transactions = filterByStartDate(transactions,userStartDate);
+        }
+        System.out.println("Please enter the End Date in following format: yyyy-MM-dd");
+        LocalDate userEndDate = null;
+        String userDate2 = scanner.nextLine().trim();
+
+        if (!userDate2.isEmpty()){
+            userEndDate = LocalDate.parse(userDate2);
+        }
+
+        System.out.println("Please enter the Description:");
+        String userDescription = null;
+        userDescription = scanner.nextLine().trim();
+
+        System.out.println("Please enter the Vendors name:");
+        String userVendor = null;
+        userVendor = scanner.nextLine().trim();
+
+        System.out.println("Please enter the Id of Transaction: (D | P)");
+        String userIdOfTransaction = null;
+        userIdOfTransaction = scanner.nextLine().trim().toUpperCase();
+
+        System.out.println("Please enter the Amount of Transaction:");
+        Double userAmount = null;
+        String userAmountEntry = scanner.nextLine();
+        if(!userAmountEntry.isEmpty()) userAmount = Double.parseDouble(userAmountEntry);
+
+
+
+        for (Transaction transaction: transactions){
+
+            LocalDateTime dt = transaction.getDateTime();
+            boolean matches = true;
+
+            if (userEndDate != null && transaction.getDate().isAfter(userEndDate)){
+                matches = false;
+            }
+            if (!userDescription.isEmpty() && !transaction.getDescription().equalsIgnoreCase(userDescription)){
+                matches = false;
+            }
+            if (!userVendor.isEmpty() && !transaction.getVendor().equalsIgnoreCase(userVendor)){
+                matches = false;
+            }
+            if (!userIdOfTransaction.isEmpty() && !transaction.getIdOfTransaction().equalsIgnoreCase(userIdOfTransaction)){
+                matches = false;
+            }
+            if (!userAmountEntry.isEmpty() && userAmount != null && transaction.getTransactionAmount() != userAmount){
+                matches = false;
+            }
+            if(matches){
+                //matchingTransactions.add(transaction);
+            }
+        }
+        return transactions;
+    }
+    public static List<Transaction> filterByStartDate(List<Transaction> transactions, LocalDate userStartDate){
+        List<Transaction> matchingTransactions = new ArrayList<>();
+
+        for(Transaction transaction:transactions){
+            if (transaction.getDate().isAfter(userStartDate)){
+                matchingTransactions.add(transaction);
+            }
+        }
+        return matchingTransactions;
     }
 
 }
