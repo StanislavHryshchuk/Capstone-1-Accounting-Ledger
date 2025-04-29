@@ -7,12 +7,9 @@ public class Transaction {
     private LocalDateTime dateTime;
     private LocalDate date;
     private LocalTime time;
-    private String stringDate;
-    private String stringTime;
     private String description;
     private String idOfTransaction;
     private double transactionAmount;
-    private String paymentDescription;
     private String paymentId;
     private String vendor;
 
@@ -20,7 +17,6 @@ public class Transaction {
 
     //Deposit Constructor
     public Transaction (LocalDate date, LocalTime time, String description, String vendor, String idOfTransaction, double transactionAmount){
-
         this.dateTime = LocalDateTime.of(date,time);
         this.date = date;
         this.time = time;

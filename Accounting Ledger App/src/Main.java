@@ -11,7 +11,6 @@ import java.util.*;
 public class Main {
     static Scanner scanner = new Scanner(System.in);
     static DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm:ss a");
-    static DateTimeFormatter dateTimevar = DateTimeFormatter.ofPattern("yyyy-MM-dd|hh:mm:ss a");
     static DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     static String transactionFileName = "src/transaction.csv";
 
@@ -317,31 +316,18 @@ public class Main {
 
     public static List<Transaction> searchByVendor (String fileName){
 
+        List<Transaction> transactions = getTransactionsFromFile(fileName);
         List<Transaction> searchByVendor = new ArrayList<>();
+
         System.out.println("Please enter the Vendor: ");
         String userEnterVendor = scanner.nextLine();
 
-            try(BufferedReader br = new BufferedReader(new FileReader(fileName))){
-                String line;
-                while ((line = br.readLine()) != null){
-                    String[] arrTransaction = line.split("\\|");
+        for (Transaction transaction: transactions){
+            if(transaction.getVendor().equals(userEnterVendor)){
 
-                    LocalDate date = LocalDate.parse(arrTransaction[0],dateFormatter);
-                    LocalTime time = LocalTime.parse(arrTransaction[1],timeFormatter);
-                    String description = arrTransaction[2];
-                    String vendor = arrTransaction[3];
-                    String id = arrTransaction[4];
-                    double amount = Double.parseDouble(arrTransaction[5]);
-
-                    if(vendor.equals(userEnterVendor)){
-                        Transaction transaction = new Transaction(date,time,description,vendor,id,amount);
-
-                        searchByVendor.add(transaction);
-                    }
-                }
-            }catch (IOException e){
-                System.out.println(e.getMessage());
+                searchByVendor.add(transaction);
             }
+        }
         return searchByVendor;
     }
 
