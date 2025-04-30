@@ -3,11 +3,11 @@ In this project, I used my knowledge of Java programming to create a Command-Lin
 With this application, I can track all financial transactions for business or personal use.
 The program allows users to add deposits, make payments, view transaction history, and generate detailed financial reports — all stored and managed through a simple and efficient Java system.
 <details>
-  ### <summary>Home Menu</summary>
-  - Item 1
-  - Item 2
-  - Even code:
-  - 
+  ### <summary>README File Menu</summary>
+  <details>
+    🛠 Technologies Used
+  </details>
+</details>
 ## 🛠 Technologies Used
   * Java 17+1111
   * File I/O (BufferedReader, FileWriter)
