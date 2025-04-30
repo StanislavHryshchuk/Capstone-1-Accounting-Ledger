@@ -118,7 +118,7 @@ public class Main {
                   2. Display Deposits.
                   3. Display Payments.
                   4. Show reports.
-                  5. Go back to Home menu.""");
+                  5. Go back to Home Screen.""");
 
             int userLedgerChoice = Integer.parseInt(scanner.nextLine());
             switch (userLedgerChoice){
