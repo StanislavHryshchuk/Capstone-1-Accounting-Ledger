@@ -6,10 +6,10 @@ The program allows users to add deposits, make payments, view transaction histor
    <summary>README File Menu</summary>
   <details>
      <summary>🛠 Technologies Used</summary>
-   * Java 17+1111
-   * File I/O (BufferedReader, FileWriter)
-   * Collections API (ArrayList, Comparator)
-   * Java Time API (LocalDate, LocalTime, LocalDateTime, DateTimeFormatter)
+         * Java 17+1111
+         * File I/O (BufferedReader, FileWriter)
+         * Collections API (ArrayList, Comparator)
+         * Java Time API (LocalDate, LocalTime, LocalDateTime, DateTimeFormatter)
   </details>
 </details>
 ## 🛠 Technologies Used
