@@ -15,17 +15,16 @@ public class Main {
     static String transactionFileName = "src/transaction.csv";
 
 
-
     public static void main(String[] args) {
 
-        System.out.println("\n-------------------- Welcome to Accounting Ledger Application -------------------------");
+        System.out.println("\n----- Welcome to Accounting Ledger Application -----");
         userMenu();
     }
 
     public static void userMenu(){
         boolean running = true;
         while (running){
-            System.out.println("\n--------------------------- Home Screen --------------------------------");
+            System.out.println("\n          *** Home Screen *** ");
             System.out.println("Please select a menu option from 1 - 4.");
             System.out.println("""
                     1. Add Deposit.
@@ -112,7 +111,7 @@ public class Main {
     public static void ledgerMenu(){
         boolean runningLedger = true;
         while(runningLedger){
-            System.out.println("\n------------------------------ Ledger Menu ---------------------------------\n");
+            System.out.println("\n          *** Ledger Menu ***");
             System.out.println("Please select a menu option from 1 - 5.");
             System.out.println("""
                   1. Display all entries.
@@ -155,7 +154,7 @@ public class Main {
 
         for (Transaction transaction : transactions) {
 
-            if (transaction.getIdOfTransaction().equals(idOfTransaction)) {
+            if (transaction.getIdOfTransaction().equalsIgnoreCase(idOfTransaction)) {
                 matchingTransactions.add(transaction);
             }
         }
@@ -193,8 +192,8 @@ public class Main {
     public static void reportsMenu (){
         boolean runningReport = true;
         while (runningReport){
-            System.out.println("\n---------------------------------- Report Menu ----------------------------------");
-            System.out.println("\nPlease select option from 1 - 7.");
+            System.out.println("\n          *** Report Menu ***");
+            System.out.println("Please select option from 1 - 7.");
             System.out.println("""
                     1. Month to Date.
                     2. Previous Month.
@@ -349,7 +348,7 @@ public class Main {
 
         List<Transaction> transactions = getTransactionsFromFile(fileName);
 
-        System.out.println("Please enter the information for the following fields: Start Date,End Date, Description,Vendor,Id of Transaction,Amount");
+        System.out.println("Please enter the information for the following fields: Start Date,End Date, Description,Vendor,Id of Transaction,Amount\nPress 'Enter' button to skip");
 
         System.out.println("Please enter the Start Date in following format: yyyy-MM-dd");
         String userDate = scanner.nextLine().trim();
@@ -360,6 +359,7 @@ public class Main {
 
         System.out.println("Please enter the End Date in following format: yyyy-MM-dd");
         String userDate2 = scanner.nextLine().trim();
+        //reformatingDateFormat(userDate2);
         if (!userDate2.isBlank()){
             LocalDate userEndDate = LocalDate.parse(userDate2);
             transactions = filterByEndDate(transactions,userEndDate);
