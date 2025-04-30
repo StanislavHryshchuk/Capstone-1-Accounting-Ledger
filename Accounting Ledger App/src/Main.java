@@ -71,7 +71,7 @@ public class Main {
         try {
             depositAmount = Double.parseDouble(scanner.nextLine());
         } catch (NumberFormatException e) {
-            System.out.println("Invalid amount. Defaulting to 0.");
+            System.out.println("Invalid amount.");
         }
 
         System.out.println("Please provide a description of deposit: ");
@@ -95,7 +95,7 @@ public class Main {
         try {
             paymentAmount = Double.parseDouble(scanner.nextLine());
         } catch (NumberFormatException e) {
-            System.out.println("Invalid amount. Defaulting to 0.");
+            System.out.println("Invalid amount.");
         }
 
         System.out.println("Please provide a description of payment.");
