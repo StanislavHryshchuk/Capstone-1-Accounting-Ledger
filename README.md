@@ -4,29 +4,19 @@ With this application, I can track all financial transactions for business or pe
 The program allows users to add deposits, make payments, view transaction history, and generate detailed financial reports — all stored and managed through a simple and efficient Java system.
 <details>
   <summary>README File Menu</summary>
+- [🛠 Technologies Used](#🛠headers)
+- [Text Formatting](#text-formatting)
+- [Lists](#lists)
+- [Code Examples](#code-examples)
+- [Tables](#tables)
+- [Links and Anchors](#links-and-anchors)
+- [Images](#images)
+- [Blockquotes](#blockquotes)
+- [Task Lists](#task-lists)
+- [Collapsible Sections](#collapsible-sections)
+- [Footnotes](#footnotes)
 
-
-  <details>
-    <summary>🛠 Technologies Used</summary>
-
-    - Java 17+
-    - File I/O (`BufferedReader`, `FileWriter`)
-    - Collections API (`ArrayList`, `Comparator`)
-    - Java Time API (`LocalDate`, `LocalTime`, `LocalDateTime`, `DateTimeFormatter`)
-
-  </details>
-
-  <details>
-    <summary>📦 Features</summary>
-
-    - Add Deposit
-    - Make Payment (Debit)
-    - View All Transactions
-    - Filter by Month or Year
-    - View Running Balance
-    - Export Ledger to CSV
-
-  </details>
+  
 
 </details>
 ## 🛠 Technologies Used
