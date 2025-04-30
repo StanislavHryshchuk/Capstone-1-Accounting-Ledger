@@ -43,13 +43,13 @@ The program allows users to add deposits, make payments, view transaction histor
   <summary>💻 Application Interface</summary>
 
   ### Home Menu:
-   ![alt text](homeScreen.png)
+   ![alt text](/pictures/homeScreen.png)
 
   ### Ledger Menu:
-   ![alt text](ledgerScreen.png)
+   ![alt text](/pictures/ledgerScreen.png)
   
   ### Reports Menu
-  ![alt text](reportScreen.png)
+  ![alt text](/pictures/reportScreen.png)
 
   </details>
   <details>
