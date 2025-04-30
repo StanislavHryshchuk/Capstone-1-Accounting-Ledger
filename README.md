@@ -6,7 +6,7 @@ The program allows users to add deposits, make payments, view transaction histor
   <summary>README File Menu</summary>
   
 - [🛠 Technologies Used](#🛠technologies-used)
-- [Text Formatting](#text-formatting)
+- [🧠 Features](#🧠features)
 - [Lists](#lists)
 - [Code Examples](#code-examples)
 - [Tables](#tables)
@@ -17,9 +17,8 @@ The program allows users to add deposits, make payments, view transaction histor
 - [Collapsible Sections](#collapsible-sections)
 - [Footnotes](#footnotes)
 
-  
-
 </details>
+
 ## 🛠 Technologies Used
   * Java 17+1111
   * File I/O (BufferedReader, FileWriter)
