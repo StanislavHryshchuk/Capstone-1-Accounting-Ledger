@@ -43,13 +43,13 @@ Sorts all transactions by newest to oldest by default.
   <summary>💻 Application Interface</summary>
 
 ### Home Menu:
-![alt text](pictures/homeScreen.png)
+![alt text](/pictures/homeScreen.png)
 
 ### Ledger Menu:
-![alt text](pictures/ledgerScreen.png)
+![alt text](/pictures/ledgerScreen.png)
 
 ### Reports Menu
-![alt text](pictures/reportScreen.png)
+![alt text](/pictures/reportScreen.png)
 
   </details>
   <details>
