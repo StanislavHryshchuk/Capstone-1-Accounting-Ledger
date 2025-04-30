@@ -4,7 +4,8 @@ With this application, I can track all financial transactions for business or pe
 The program allows users to add deposits, make payments, view transaction history, and generate detailed financial reports — all stored and managed through a simple and efficient Java system.
 <details>
    <summary>README File Menu</summary>
-  <🛠 Technologies Used>
+  <details>
+     <summary>🛠 Technologies Used</summary>
    * Java 17+1111
    * File I/O (BufferedReader, FileWriter)
    * Collections API (ArrayList, Comparator)
