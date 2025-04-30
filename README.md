@@ -5,7 +5,7 @@ The program allows users to add deposits, make payments, view transaction histor
 <details>
   <summary>README File Menu</summary>
   
-- [🛠 Technologies Used](#🛠headers)
+- [🛠 Technologies Used](#🛠technologies-used)
 - [Text Formatting](#text-formatting)
 - [Lists](#lists)
 - [Code Examples](#code-examples)
