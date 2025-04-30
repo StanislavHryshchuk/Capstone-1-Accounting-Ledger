@@ -69,7 +69,7 @@ public class Main {
         System.out.println("What amount you would like to deposit?");
         double depositAmount = 0;
         try {
-            depositAmount = Double.parseDouble(scanner.nextLine()) * -1;
+            depositAmount = Double.parseDouble(scanner.nextLine());
         } catch (NumberFormatException e) {
             System.out.println("Invalid amount. Defaulting to 0.");
         }
