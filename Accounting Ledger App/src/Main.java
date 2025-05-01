@@ -208,7 +208,6 @@ public class Main {
                     List<Transaction> sortMonthToDate = monthToDate(transactionFileName);
                     sortMonthToDate.sort(Comparator.comparing(Transaction::getDateTime).reversed());
                     displayTransaction(sortMonthToDate);
-
                     break;
                 case 2:
                     List<Transaction> sortPreviousMonth = previousMonth(transactionFileName);
@@ -250,7 +249,7 @@ public class Main {
 
         LocalDateTime dateToday = LocalDateTime.now();
 
-        LocalDateTime startOfMonth = dateToday.withDayOfMonth(1);
+        LocalDateTime startOfMonth = dateToday.withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0).withNano(0);
 
         for (Transaction transaction: transactions){
 
@@ -270,7 +269,7 @@ public class Main {
 
         LocalDateTime dateToday = LocalDateTime.now();
 
-        LocalDateTime startOfPreviousMonth = dateToday.minusMonths(1).withDayOfMonth(1);
+        LocalDateTime startOfPreviousMonth = dateToday.minusMonths(1).withDayOfMonth(1).withHour(0).withMinute(0).withNano(0);
 
         LocalDateTime endOfPreviousMonth = startOfPreviousMonth.withDayOfMonth(startOfPreviousMonth.getMonth().length(LocalDate.of(startOfPreviousMonth.getYear(),1,1).isLeapYear()));
 
@@ -292,7 +291,7 @@ public class Main {
         List<Transaction> yearToDate = new ArrayList<>();
 
         LocalDateTime todayDate = LocalDateTime.now();
-        LocalDateTime startOfTheYear = todayDate.withDayOfYear(1);
+        LocalDateTime startOfTheYear = todayDate.withDayOfYear(1).withHour(0).withMinute(0).withSecond(0).withNano(0);
 
         for (Transaction transaction: transactions){
             LocalDateTime dt = transaction.getDateTime();
@@ -311,7 +310,7 @@ public class Main {
         List<Transaction> previousYear = new ArrayList<>();
 
         LocalDateTime todayDate = LocalDateTime.now();
-        LocalDateTime startOfPreviousYear = todayDate.minusYears(1).withDayOfYear(1);
+        LocalDateTime startOfPreviousYear = todayDate.minusYears(1).withDayOfYear(1).withHour(0).withMinute(0).withSecond(0).withNano(0);
 
         LocalDateTime endOfPreviousYear = LocalDateTime.of(startOfPreviousYear.getYear(),12,31,23,59,59);
 
