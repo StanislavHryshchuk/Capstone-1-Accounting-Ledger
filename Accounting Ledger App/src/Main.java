@@ -21,9 +21,9 @@ public class Main {
         userMenu();
     }
 
-    public static void userMenu(){
+    public static void userMenu() {
         boolean running = true;
-        while (running){
+        while (running) {
             System.out.println("\n          *** Home Screen *** ");
             System.out.println("Please select a menu option from 1 - 4.");
             System.out.println("""
@@ -31,37 +31,43 @@ public class Main {
                     2. Make Payment(Debit).
                     3. Ledger.
                     4. Exit.""");
+            try {
 
-            int userChoice = Integer.parseInt(scanner.nextLine());
-            switch (userChoice){
-                case 1:
-                    Transaction newDeposit = addDeposit();
-                    addNewTransaction(transactionFileName, newDeposit);
-                    break;
-                case 2:
-                    Transaction newPayment = makePayment();
-                    addNewTransaction(transactionFileName,newPayment);
-                    break;
-                case 3:
-                    ledgerMenu();
-                    break;
-                case 4:
-                    running = false;
-                    break;
-                default: System.out.println("Invalid input, please select from 1 - 4 option.");
+
+                int userChoice = Integer.parseInt(scanner.nextLine());
+                switch (userChoice) {
+                    case 1:
+                        Transaction newDeposit = addDeposit();
+                        addNewTransaction(transactionFileName, newDeposit);
+                        break;
+                    case 2:
+                        Transaction newPayment = makePayment();
+                        addNewTransaction(transactionFileName, newPayment);
+                        break;
+                    case 3:
+                        ledgerMenu();
+                        break;
+                    case 4:
+                        running = false;
+                        break;
+                    default:
+                        System.out.println("Invalid input, please select from 1 - 4 option.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println(e.getMessage());
             }
         }
     }
 
-    public static void addNewTransaction (String filename, Transaction transaction){
-        try (FileWriter fw = new FileWriter(filename,true)){
+    public static void addNewTransaction(String filename, Transaction transaction) {
+        try (FileWriter fw = new FileWriter(filename, true)) {
             fw.write(transaction.toFileString() + "\n");
-        } catch (IOException e){
+        } catch (IOException e) {
             System.out.println(e.getMessage());
         }
     }
 
-    public static Transaction addDeposit(){
+    public static Transaction addDeposit() {
 
         LocalDate ld = LocalDate.now();
         LocalTime lt = LocalTime.now();
@@ -82,10 +88,10 @@ public class Main {
 
         String depositId = "D";
 
-        return new Transaction(ld,lt,depositDescription,vendor,depositId,depositAmount);
+        return new Transaction(ld, lt, depositDescription, vendor, depositId, depositAmount);
     }
 
-    public static Transaction makePayment(){
+    public static Transaction makePayment() {
 
         LocalDate ld = LocalDate.now();
         LocalTime lt = LocalTime.now();
@@ -93,7 +99,7 @@ public class Main {
         System.out.println("What is the payment amount?");
         double paymentAmount = 0;
         try {
-            paymentAmount = Double.parseDouble(scanner.nextLine());
+            paymentAmount = Double.parseDouble(scanner.nextLine()) * -1;
         } catch (NumberFormatException e) {
             System.out.println("Invalid amount.");
         }
@@ -105,50 +111,54 @@ public class Main {
         String vendor = scanner.nextLine();
         String paymentId = "P";
 
-        return new Transaction(ld,lt, paymentDescription,vendor,paymentId,paymentAmount);
+        return new Transaction(ld, lt, paymentDescription, vendor, paymentId, paymentAmount);
     }
 
-    public static void ledgerMenu(){
+    public static void ledgerMenu() {
         boolean runningLedger = true;
-        while(runningLedger){
+        while (runningLedger) {
             System.out.println("\n          *** Ledger Menu ***");
             System.out.println("Please select a menu option from 1 - 5.");
             System.out.println("""
-                  1. Display all entries.
-                  2. Display Deposits.
-                  3. Display Payments.
-                  4. Show reports.
-                  5. Go back to Home Screen.""");
-
-            int userLedgerChoice = Integer.parseInt(scanner.nextLine());
-            switch (userLedgerChoice){
-                case 1 :
-                    List<Transaction> allTransactions = getTransactionsFromFile(transactionFileName);
-                    allTransactions.sort(Comparator.comparing(Transaction::getDateTime).reversed());
-                    displayTransaction(allTransactions);
-                    break;
-                case 2 :
-                    List<Transaction> depositTransactions = findTransactionsById("D");
-                    depositTransactions.sort(Comparator.comparing(Transaction::getDateTime).reversed());
-                    displayTransaction(depositTransactions);
-                    break;
-                case 3:
-                    List<Transaction> paymentTransactions = findTransactionsById("P");
-                    paymentTransactions.sort(Comparator.comparing(Transaction::getDateTime).reversed());
-                    displayTransaction(paymentTransactions);
-                    break;
-                case 4:
-                    reportsMenu();
-                    break;
-                case 5:
-                    runningLedger = false;
-                    break;
-                default: System.out.println("Invalid input, please select from 1 - 5 option.");
+                    1. Display all entries.
+                    2. Display Deposits.
+                    3. Display Payments.
+                    4. Show reports.
+                    5. Go back to Home Screen.""");
+            try {
+                int userLedgerChoice = Integer.parseInt(scanner.nextLine());
+                switch (userLedgerChoice) {
+                    case 1:
+                        List<Transaction> allTransactions = getTransactionsFromFile(transactionFileName);
+                        allTransactions.sort(Comparator.comparing(Transaction::getDateTime).reversed());
+                        displayTransaction(allTransactions);
+                        break;
+                    case 2:
+                        List<Transaction> depositTransactions = findTransactionsById("D");
+                        depositTransactions.sort(Comparator.comparing(Transaction::getDateTime).reversed());
+                        displayTransaction(depositTransactions);
+                        break;
+                    case 3:
+                        List<Transaction> paymentTransactions = findTransactionsById("P");
+                        paymentTransactions.sort(Comparator.comparing(Transaction::getDateTime).reversed());
+                        displayTransaction(paymentTransactions);
+                        break;
+                    case 4:
+                        reportsMenu();
+                        break;
+                    case 5:
+                        runningLedger = false;
+                        break;
+                    default:
+                        System.out.println("Invalid input, please select from 1 - 5 option.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println(e.getMessage());
             }
         }
     }
 
-    public static List<Transaction> findTransactionsById(String idOfTransaction){
+    public static List<Transaction> findTransactionsById(String idOfTransaction) {
         List<Transaction> transactions = getTransactionsFromFile(transactionFileName);
         List<Transaction> matchingTransactions = new ArrayList<>();
 
@@ -161,37 +171,37 @@ public class Main {
         return matchingTransactions;
     }
 
-    public static List<Transaction> getTransactionsFromFile(String fileName){
+    public static List<Transaction> getTransactionsFromFile(String fileName) {
         List<Transaction> transactions = new ArrayList<>();
 
-        try (BufferedReader br = new BufferedReader(new FileReader(fileName))){
+        try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
             String line;
 
-            while ((line = br.readLine()) != null){
+            while ((line = br.readLine()) != null) {
 
                 String[] arrTransaction = line.split("\\|");
 
-                Transaction transaction = new Transaction(LocalDate.parse(arrTransaction[0],dateFormatter),LocalTime.parse(arrTransaction[1],timeFormatter),arrTransaction[2],arrTransaction[3],arrTransaction[4],Double.parseDouble(arrTransaction[5]));
+                Transaction transaction = new Transaction(LocalDate.parse(arrTransaction[0], dateFormatter), LocalTime.parse(arrTransaction[1], timeFormatter), arrTransaction[2], arrTransaction[3], arrTransaction[4], Double.parseDouble(arrTransaction[5]));
 
                 transactions.add(transaction);
             }
-        }catch (IOException e){
+        } catch (IOException e) {
             System.out.println(e.getMessage());
         }
         return transactions;
     }
 
-    public static void displayTransaction(List<Transaction> transactions){
+    public static void displayTransaction(List<Transaction> transactions) {
 
         for (Transaction transaction : transactions) {
 
-            System.out.printf("%s | %s | %s | %s | %s | %.2f%n", transaction.getDate().format(dateFormatter), transaction.getTime().format(timeFormatter), transaction.getDescription(),transaction.getVendor(), transaction.getIdOfTransaction(), transaction.getTransactionAmount());
+            System.out.printf("%s | %s | %s | %s | %s | %.2f%n", transaction.getDate().format(dateFormatter), transaction.getTime().format(timeFormatter), transaction.getDescription(), transaction.getVendor(), transaction.getIdOfTransaction(), transaction.getTransactionAmount());
         }
     }
 
-    public static void reportsMenu (){
+    public static void reportsMenu() {
         boolean runningReport = true;
-        while (runningReport){
+        while (runningReport) {
             System.out.println("\n          *** Report Menu ***");
             System.out.println("Please select option from 1 - 7.");
             System.out.println("""
@@ -202,8 +212,11 @@ public class Main {
                     5. Search by Vendor
                     6. Custom Search
                     7. Back""");
+            try {
+
+
             int reportUserChoice = Integer.parseInt(scanner.nextLine());
-            switch (reportUserChoice){
+            switch (reportUserChoice) {
                 case 1:
                     List<Transaction> sortMonthToDate = monthToDate(transactionFileName);
                     sortMonthToDate.sort(Comparator.comparing(Transaction::getDateTime).reversed());
@@ -240,10 +253,13 @@ public class Main {
                 default:
                     System.out.println("Invalid input, please select from 1 - 6 option.");
             }
+            } catch (NumberFormatException e){
+                System.out.println(e.getMessage());
+            }
         }
     }
 
-    public static List<Transaction> monthToDate(String fileName){
+    public static List<Transaction> monthToDate(String fileName) {
         List<Transaction> transactions = getTransactionsFromFile(fileName);
         List<Transaction> monthToDateTransactions = new ArrayList<>();
 
@@ -251,18 +267,18 @@ public class Main {
 
         LocalDateTime startOfMonth = dateToday.withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0).withNano(0);
 
-        for (Transaction transaction: transactions){
+        for (Transaction transaction : transactions) {
 
             LocalDateTime dt = transaction.getDateTime();
 
-            if((dt.isEqual(startOfMonth) || dt.isAfter(startOfMonth)) && ((dt.isEqual(dateToday)) || (dt.isBefore(dateToday)))){
+            if ((dt.isEqual(startOfMonth) || dt.isAfter(startOfMonth)) && ((dt.isEqual(dateToday)) || (dt.isBefore(dateToday)))) {
                 monthToDateTransactions.add(transaction);
             }
         }
         return monthToDateTransactions;
     }
 
-    public static List<Transaction> previousMonth(String fileName){
+    public static List<Transaction> previousMonth(String fileName) {
 
         List<Transaction> transactions = getTransactionsFromFile(fileName);
         List<Transaction> previousMonth = new ArrayList<>();
@@ -271,21 +287,21 @@ public class Main {
 
         LocalDateTime startOfPreviousMonth = dateToday.minusMonths(1).withDayOfMonth(1).withHour(0).withMinute(0).withNano(0);
 
-        LocalDateTime endOfPreviousMonth = startOfPreviousMonth.withDayOfMonth(startOfPreviousMonth.getMonth().length(LocalDate.of(startOfPreviousMonth.getYear(),1,1).isLeapYear()));
+        LocalDateTime endOfPreviousMonth = startOfPreviousMonth.withDayOfMonth(startOfPreviousMonth.getMonth().length(LocalDate.of(startOfPreviousMonth.getYear(), 1, 1).isLeapYear()));
 
 
-        for (Transaction transaction: transactions){
+        for (Transaction transaction : transactions) {
             LocalDateTime dt = transaction.getDateTime();
 
-            if((dt.isEqual(startOfPreviousMonth) || dt.isAfter(startOfPreviousMonth)) && (dt.isEqual(endOfPreviousMonth) || dt.isBefore(endOfPreviousMonth))){
+            if ((dt.isEqual(startOfPreviousMonth) || dt.isAfter(startOfPreviousMonth)) && (dt.isEqual(endOfPreviousMonth) || dt.isBefore(endOfPreviousMonth))) {
 
                 previousMonth.add(transaction);
             }
         }
-        return  previousMonth;
+        return previousMonth;
     }
 
-    public static List<Transaction> yearToDate(String fileName){
+    public static List<Transaction> yearToDate(String fileName) {
 
         List<Transaction> transactions = getTransactionsFromFile(fileName);
         List<Transaction> yearToDate = new ArrayList<>();
@@ -293,10 +309,10 @@ public class Main {
         LocalDateTime todayDate = LocalDateTime.now();
         LocalDateTime startOfTheYear = todayDate.withDayOfYear(1).withHour(0).withMinute(0).withSecond(0).withNano(0);
 
-        for (Transaction transaction: transactions){
+        for (Transaction transaction : transactions) {
             LocalDateTime dt = transaction.getDateTime();
 
-            if((dt.isEqual(startOfTheYear) || dt.isAfter(startOfTheYear)) && (dt.isEqual(todayDate) || dt.isBefore(todayDate))){
+            if ((dt.isEqual(startOfTheYear) || dt.isAfter(startOfTheYear)) && (dt.isEqual(todayDate) || dt.isBefore(todayDate))) {
 
                 yearToDate.add(transaction);
             }
@@ -304,7 +320,7 @@ public class Main {
         return yearToDate;
     }
 
-    public static List<Transaction> previousYear(String fileName){
+    public static List<Transaction> previousYear(String fileName) {
         List<Transaction> transactions = getTransactionsFromFile(fileName);
 
         List<Transaction> previousYear = new ArrayList<>();
@@ -312,13 +328,13 @@ public class Main {
         LocalDateTime todayDate = LocalDateTime.now();
         LocalDateTime startOfPreviousYear = todayDate.minusYears(1).withDayOfYear(1).withHour(0).withMinute(0).withSecond(0).withNano(0);
 
-        LocalDateTime endOfPreviousYear = LocalDateTime.of(startOfPreviousYear.getYear(),12,31,23,59,59);
+        LocalDateTime endOfPreviousYear = LocalDateTime.of(startOfPreviousYear.getYear(), 12, 31, 23, 59, 59);
 
-        for (Transaction transaction: transactions){
+        for (Transaction transaction : transactions) {
 
             LocalDateTime dt = transaction.getDateTime();
 
-            if ((dt.isEqual(startOfPreviousYear) || dt.isAfter(startOfPreviousYear)) && (dt.isEqual(endOfPreviousYear) || dt.isBefore(endOfPreviousYear))){
+            if ((dt.isEqual(startOfPreviousYear) || dt.isAfter(startOfPreviousYear)) && (dt.isEqual(endOfPreviousYear) || dt.isBefore(endOfPreviousYear))) {
 
                 previousYear.add(transaction);
             }
@@ -326,7 +342,7 @@ public class Main {
         return previousYear;
     }
 
-    public static List<Transaction> searchByVendor (String fileName){
+    public static List<Transaction> searchByVendor(String fileName) {
 
         List<Transaction> transactions = getTransactionsFromFile(fileName);
         List<Transaction> searchByVendor = new ArrayList<>();
@@ -334,8 +350,8 @@ public class Main {
         System.out.println("Please enter the Vendor: ");
         String userEnterVendor = scanner.nextLine();
 
-        for (Transaction transaction: transactions){
-            if(transaction.getVendor().equalsIgnoreCase(userEnterVendor)){
+        for (Transaction transaction : transactions) {
+            if (transaction.getVendor().equalsIgnoreCase(userEnterVendor)) {
 
                 searchByVendor.add(transaction);
             }
@@ -343,7 +359,7 @@ public class Main {
         return searchByVendor;
     }
 
-    public static List<Transaction> customSearch (String fileName) {
+    public static List<Transaction> customSearch(String fileName) {
 
         List<Transaction> transactions = getTransactionsFromFile(fileName);
 
@@ -353,38 +369,38 @@ public class Main {
         String userDate = scanner.nextLine().trim();
         if (!userDate.isBlank()) {
             LocalDate userStartDate = LocalDate.parse(userDate);
-            transactions = filterByStartDate(transactions,userStartDate);
+            transactions = filterByStartDate(transactions, userStartDate);
         }
 
         System.out.println("Please enter the End Date in following format: yyyy-MM-dd");
         String userDate2 = scanner.nextLine().trim();
         //reformatingDateFormat(userDate2);
-        if (!userDate2.isBlank()){
+        if (!userDate2.isBlank()) {
             LocalDate userEndDate = LocalDate.parse(userDate2);
-            transactions = filterByEndDate(transactions,userEndDate);
+            transactions = filterByEndDate(transactions, userEndDate);
         }
 
         System.out.println("Please enter the Description:");
         String userDescription = scanner.nextLine().trim();
-        if(!userDescription.isBlank()){
-            transactions = filterByDescription(transactions,userDescription);
+        if (!userDescription.isBlank()) {
+            transactions = filterByDescription(transactions, userDescription);
         }
 
         System.out.println("Please enter the Vendors name:");
         String userVendor = scanner.nextLine().trim();
-        if (!userVendor.isBlank()){
-            transactions = filterByVendor(transactions,userVendor);
+        if (!userVendor.isBlank()) {
+            transactions = filterByVendor(transactions, userVendor);
         }
 
         System.out.println("Please enter the Id of Transaction: (D | P)");
         String userIdOfTransaction = scanner.nextLine().trim();
-        if (!userIdOfTransaction.isBlank()){
-            transactions = filterByID(transactions,userIdOfTransaction);
+        if (!userIdOfTransaction.isBlank()) {
+            transactions = filterByID(transactions, userIdOfTransaction);
         }
 
         System.out.println("Please enter the Amount of Transaction:");
         String userAmountEntry = scanner.nextLine();
-        if(!userAmountEntry.isBlank()) {
+        if (!userAmountEntry.isBlank()) {
             double userAmount = Double.parseDouble(userAmountEntry);
             transactions = filterByAmount(transactions, userAmount);
         }
@@ -392,66 +408,66 @@ public class Main {
         return transactions;
     }
 
-    public static List<Transaction> filterByStartDate(List<Transaction> transactions, LocalDate userStartDate){
+    public static List<Transaction> filterByStartDate(List<Transaction> transactions, LocalDate userStartDate) {
         List<Transaction> matchingTransactions = new ArrayList<>();
 
-        for(Transaction transaction:transactions){
-            if (transaction.getDate().isAfter(userStartDate) || transaction.getDate().isEqual(userStartDate)){
+        for (Transaction transaction : transactions) {
+            if (transaction.getDate().isAfter(userStartDate) || transaction.getDate().isEqual(userStartDate)) {
                 matchingTransactions.add(transaction);
             }
         }
         return matchingTransactions;
     }
 
-    public static List<Transaction> filterByEndDate(List<Transaction> transactions, LocalDate userEndDate){
+    public static List<Transaction> filterByEndDate(List<Transaction> transactions, LocalDate userEndDate) {
         List<Transaction> matchingTransactions = new ArrayList<>();
 
-        for(Transaction transaction:transactions){
-            if(transaction.getDate().isBefore(userEndDate) || transaction.getDate().isEqual(userEndDate)){
+        for (Transaction transaction : transactions) {
+            if (transaction.getDate().isBefore(userEndDate) || transaction.getDate().isEqual(userEndDate)) {
                 matchingTransactions.add(transaction);
             }
         }
         return matchingTransactions;
     }
 
-    public static List<Transaction> filterByDescription(List<Transaction> transactions, String userDescription){
+    public static List<Transaction> filterByDescription(List<Transaction> transactions, String userDescription) {
         List<Transaction> matchingTransactions = new ArrayList<>();
 
-        for(Transaction transaction:transactions){
-            if(transaction.getDescription().equalsIgnoreCase(userDescription)){
+        for (Transaction transaction : transactions) {
+            if (transaction.getDescription().equalsIgnoreCase(userDescription)) {
                 matchingTransactions.add(transaction);
             }
         }
         return matchingTransactions;
     }
 
-    public static List<Transaction> filterByVendor(List<Transaction> transactions, String userVendor){
+    public static List<Transaction> filterByVendor(List<Transaction> transactions, String userVendor) {
         List<Transaction> matchingTransactions = new ArrayList<>();
 
-        for(Transaction transaction:transactions){
-            if(transaction.getVendor().equalsIgnoreCase(userVendor)){
+        for (Transaction transaction : transactions) {
+            if (transaction.getVendor().equalsIgnoreCase(userVendor)) {
                 matchingTransactions.add(transaction);
             }
         }
         return matchingTransactions;
     }
 
-    public static List<Transaction> filterByID(List<Transaction> transactions, String userIdOfTransaction){
+    public static List<Transaction> filterByID(List<Transaction> transactions, String userIdOfTransaction) {
         List<Transaction> matchingTransactions = new ArrayList<>();
 
-        for(Transaction transaction:transactions){
-            if(transaction.getIdOfTransaction().equalsIgnoreCase(userIdOfTransaction)){
+        for (Transaction transaction : transactions) {
+            if (transaction.getIdOfTransaction().equalsIgnoreCase(userIdOfTransaction)) {
                 matchingTransactions.add(transaction);
             }
         }
         return matchingTransactions;
     }
 
-    public static List<Transaction> filterByAmount(List<Transaction> transactions, double userAmount){
+    public static List<Transaction> filterByAmount(List<Transaction> transactions, double userAmount) {
         List<Transaction> matchingTransactions = new ArrayList<>();
 
-        for(Transaction transaction:transactions){
-            if(transaction.getTransactionAmount() == userAmount ){
+        for (Transaction transaction : transactions) {
+            if (transaction.getTransactionAmount() == userAmount) {
                 matchingTransactions.add(transaction);
             }
         }
